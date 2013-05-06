@@ -97,35 +97,42 @@ class PebbleGraphicsContext(object):
 
         self.surface.blit(surface, rect.topleft)
 
-    def draw_text(self, text, font, box, alignment):
-        # TODO: overflow, alignment, layout(?)
-        rect = mkrect(box)
-        text_surface = self.tempsurface(rect.size)
-        dfont = self.get_dfont(font)
-        left, top, width = 0, 0, 0
+    def _draw_text_line(self, text, dfont, text_rect, alignment):
+        text_surface = self.tempsurface(text_rect.size)
 
+        left = 0
         for ch in text:
             glyph = dfont.get_glyph(ch)
-            glyph.blit_to(text_surface, (left, top), self.text_color)
+            glyph.blit_to(text_surface, (left, 0), self.text_color)
             left += glyph.advance
 
-        text_rect = text_surface.get_rect()
-        text_rect.width = left
+        draw_rect = text_rect.copy()
+        draw_rect.width = left
 
         if alignment == self.ALIGN_LEFT:
-            text_rect.topleft = rect.topleft
+            draw_rect.topleft = text_rect.topleft
         elif alignment == self.ALIGN_CENTER:
-            text_rect.midtop = rect.midtop
+            draw_rect.midtop = text_rect.midtop
         elif alignment == self.ALIGN_RIGHT:
-            text_rect.topright = rect.topright
+            draw_rect.topright = text_rect.topright
 
-        self.surface.blit(text_surface, text_rect)
+        self.surface.blit(text_surface, draw_rect)
+
+    def draw_text(self, text, font, box, alignment):
+        # TODO: overflow, layout(?)
+        rect = mkrect(box)
+        dfont = self.get_dfont(font)
+
+        for i, line in enumerate(text.splitlines()):
+            line_rect = rect.move(0, i * dfont.max_height).clip(rect)
+            self._draw_text_line(line, dfont, line_rect, alignment)
 
 
 class PebbleDisplayFont(object):
     def __init__(self, font):
         self._font = font
         self.glyphs = {}
+        self.max_height = font.fontinfo['max_height']
 
     def get_glyph(self, ch):
         if ch not in self.glyphs:
@@ -139,14 +146,19 @@ class PebbleDisplayGlyph(object):
     def __init__(self, codepoint, glyph_data):
         self.codepoint = codepoint
         self._glyph_data = glyph_data
+        self.advance = glyph_data['advance']
         self.rect = pygame.Rect(
             glyph_data['offset_left'], glyph_data['offset_top'],
             glyph_data['width'], glyph_data['height'])
-        self.surface = pygame.image.fromstring(
-            glyph_data['data_string'], self.rect.size, 'RGBA')
-        self.advance = glyph_data['advance']
+        if self.rect.width * self.rect.height == 0:
+            # Special-case for empty glyphs.
+            self.surface = None
+        else:
+            self.surface = pygame.image.fromstring(
+                glyph_data['data_string'], self.rect.size, 'RGBA')
 
     def blit_to(self, surface, position, color):
-        tempsurface = self.surface.copy()
-        tempsurface.fill(color, special_flags=BLEND_MIN)
-        surface.blit(tempsurface, self.rect.move(position))
+        if self.surface is not None:
+            tempsurface = self.surface.copy()
+            tempsurface.fill(color, special_flags=BLEND_MIN)
+            surface.blit(tempsurface, self.rect.move(position))
