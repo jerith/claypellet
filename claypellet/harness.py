@@ -124,16 +124,17 @@ class PebbleHarness(PebbleHarnessBase):
 
     def render(self, gctx):
         self.graphics_contexts = {}
-        self.next_context_id = 0
+        self.graphics_context_handles = []
         self.top_window.render(gctx)
 
     def get_graphics_context(self, gctxp):
         handle = ffi.cast('struct ClayGraphicsContext *', gctxp)
-        return self.graphics_contexts[handle.gctx_id]
+        return self.graphics_contexts[handle[0].gctx_id]
 
     def get_gctx_handle(self, gctx):
         # TODO: Better mechanism for this.
         handle = ffi.new('struct ClayGraphicsContext *', {'gctx_id': 0})
+        self.graphics_context_handles.append(handle)
         for k, v in self.graphics_contexts.iteritems():
             if v is gctx:
                 handle.gctx_id = k
