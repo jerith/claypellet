@@ -1,3 +1,5 @@
+import operator
+
 import pygame
 import pygame.mask
 import pygame.draw
@@ -46,6 +48,10 @@ def mkrect(grect):
                        grect.size.w, grect.size.h)
 
 
+def pmap(op, p0, p1):
+    return (op(p0[0], p1[0]), op(p0[1], p1[1]))
+
+
 class PebbleGraphicsContext(object):
     COLOR_BLACK = (0, 0, 0, 255)
     COLOR_WHITE = (255, 255, 255, 255)
@@ -76,6 +82,21 @@ class PebbleGraphicsContext(object):
         surface = pygame.Surface(size).convert_alpha()
         surface.fill((0, 0, 0, 0))
         return surface
+
+    def draw_line(self, gpoint0, gpoint1):
+        p0 = (gpoint0.x, gpoint0.y)
+        p1 = (gpoint1.x, gpoint1.y)
+        topleft = pmap(min, p0, p1)
+        bottomright = pmap(max, p0, p1)
+        size = pmap(operator.sub, bottomright, topleft)
+        surface = self.tempsurface(pmap(max, size, (1, 1)))
+        pygame.draw.line(surface, self.stroke_color,
+                         pmap(operator.sub, p0, topleft),
+                         pmap(operator.sub, p1, topleft))
+        self.surface.blit(surface, topleft)
+
+    def draw_circle(self, gpoint, radius, color, width=0):
+        pygame.draw.circle(self.surface, color, (gpoint.x, gpoint.y), radius)
 
     def draw_round_rect(self, grect, radius, color, width=0):
         rect = mkrect(grect)

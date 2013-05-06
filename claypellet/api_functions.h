@@ -55,6 +55,8 @@ void layer_remove_from_parent(Layer *child);
 void layer_add_child(Layer *parent, Layer *child);
 GRect layer_get_frame(Layer *layer);
 void layer_set_frame(Layer *layer, GRect frame);
+GRect layer_get_bounds(Layer *layer);
+void layer_set_bounds(Layer *layer, GRect frame);
 void layer_set_hidden(Layer *layer, bool hidden);
 void layer_init(Layer *layer, GRect frame);
 int32_t cos_lookup(int32_t angle);

@@ -57,6 +57,8 @@ class PebbleHarnessBase(object):
             self._mkcallback('layer_add_child'),
             self._mkcallback('layer_get_frame'),
             self._mkcallback('layer_set_frame'),
+            self._mkcallback('layer_get_bounds'),
+            self._mkcallback('layer_set_bounds'),
             self._mkcallback('layer_set_hidden'),
             self._mkcallback('layer_init'),
             self._mkcallback('cos_lookup'),
@@ -243,6 +245,12 @@ class PebbleHarnessBase(object):
 
     def layer_set_frame(self, layer, frame):
         raise NotImplementedError("layer_set_frame")
+
+    def layer_get_bounds(self, layer):
+        raise NotImplementedError("layer_get_bounds")
+
+    def layer_set_bounds(self, layer, frame):
+        raise NotImplementedError("layer_set_bounds")
 
     def layer_set_hidden(self, layer, hidden):
         raise NotImplementedError("layer_set_hidden")

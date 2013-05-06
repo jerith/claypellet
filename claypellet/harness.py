@@ -212,13 +212,22 @@ class PebbleHarness(PebbleHarnessBase):
     # void graphics_draw_pixel(GContext *ctx, GPoint point);
     # void graphics_draw_line(GContext *ctx, GPoint p0, GPoint p1);
 
+    def graphics_draw_line(self, gctxp, p0, p1):
+        gctx = self.get_graphics_context(gctxp)
+        gctx.draw_line(p0, p1)
+
     def graphics_fill_rect(self, gctxp, rect, radius, corner_mask):
         # TODO: corner_mask
         gctx = self.get_graphics_context(gctxp)
         gctx.draw_round_rect(rect, radius, gctx.fill_color, width=0)
 
-    # void graphics_draw_circle(GContext *ctx, GPoint p, int radius);
-    # void graphics_fill_circle(GContext *ctx, GPoint p, int radius);
+    def graphics_draw_circle(self, gctxp, point, radius):
+        gctx = self.get_graphics_context(gctxp)
+        gctx.draw_circle(point, radius, gctx.stroke_color, width=1)
+
+    def graphics_fill_circle(self, gctxp, point, radius):
+        gctx = self.get_graphics_context(gctxp)
+        gctx.draw_circle(point, radius, gctx.fill_color, width=0)
 
     def graphics_draw_round_rect(self, gctxp, rect, radius):
         gctx = self.get_graphics_context(gctxp)
@@ -306,6 +315,11 @@ class PebbleHarness(PebbleHarnessBase):
 
     def layer_set_frame(self, layerp, frame):
         self.get_layer(layerp).set_frame(frame)
+
+    # GRect layer_get_bounds(Layer *layer);
+
+    def layer_set_bounds(self, layerp, bounds):
+        self.get_layer(layerp).set_bounds(bounds)
 
     # void layer_set_hidden(Layer *layer, bool hidden);
 
@@ -466,6 +480,9 @@ class PebbleLayer(object):
             self._layerp.bounds.size.w = frame.size.w
         if self._layerp.bounds.size.h < frame.size.h:
             self._layerp.bounds.size.h = frame.size.h
+
+    def set_bounds(self, bounds):
+        self._layerp.bounds = bounds
 
     def add_child(self, layerp):
         assert layerp.parent == ffi.NULL

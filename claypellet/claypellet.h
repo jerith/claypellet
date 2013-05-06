@@ -56,6 +56,8 @@ typedef void (*t_layer_remove_from_parent_cb)(Layer *child);
 typedef void (*t_layer_add_child_cb)(Layer *parent, Layer *child);
 typedef GRect (*t_layer_get_frame_cb)(Layer *layer);
 typedef void (*t_layer_set_frame_cb)(Layer *layer, GRect frame);
+typedef GRect (*t_layer_get_bounds_cb)(Layer *layer);
+typedef void (*t_layer_set_bounds_cb)(Layer *layer, GRect frame);
 typedef void (*t_layer_set_hidden_cb)(Layer *layer, bool hidden);
 typedef void (*t_layer_init_cb)(Layer *layer, GRect frame);
 typedef int32_t (*t_cos_lookup_cb)(int32_t angle);
@@ -139,6 +141,8 @@ void setup_callbacks(t_animation_init_cb animation_init,
                      t_layer_add_child_cb layer_add_child,
                      t_layer_get_frame_cb layer_get_frame,
                      t_layer_set_frame_cb layer_set_frame,
+                     t_layer_get_bounds_cb layer_get_bounds,
+                     t_layer_set_bounds_cb layer_set_bounds,
                      t_layer_set_hidden_cb layer_set_hidden,
                      t_layer_init_cb layer_init,
                      t_cos_lookup_cb cos_lookup,

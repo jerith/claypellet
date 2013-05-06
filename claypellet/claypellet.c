@@ -66,6 +66,8 @@ t_layer_remove_from_parent_cb layer_remove_from_parent_cb;
 t_layer_add_child_cb layer_add_child_cb;
 t_layer_get_frame_cb layer_get_frame_cb;
 t_layer_set_frame_cb layer_set_frame_cb;
+t_layer_get_bounds_cb layer_get_bounds_cb;
+t_layer_set_bounds_cb layer_set_bounds_cb;
 t_layer_set_hidden_cb layer_set_hidden_cb;
 t_layer_init_cb layer_init_cb;
 t_cos_lookup_cb cos_lookup_cb;
@@ -149,6 +151,8 @@ void setup_callbacks(t_animation_init_cb animation_init,
                      t_layer_add_child_cb layer_add_child,
                      t_layer_get_frame_cb layer_get_frame,
                      t_layer_set_frame_cb layer_set_frame,
+                     t_layer_get_bounds_cb layer_get_bounds,
+                     t_layer_set_bounds_cb layer_set_bounds,
                      t_layer_set_hidden_cb layer_set_hidden,
                      t_layer_init_cb layer_init,
                      t_cos_lookup_cb cos_lookup,
@@ -231,6 +235,8 @@ void setup_callbacks(t_animation_init_cb animation_init,
     layer_add_child_cb = layer_add_child;
     layer_get_frame_cb = layer_get_frame;
     layer_set_frame_cb = layer_set_frame;
+    layer_get_bounds_cb = layer_get_bounds;
+    layer_set_bounds_cb = layer_set_bounds;
     layer_set_hidden_cb = layer_set_hidden;
     layer_init_cb = layer_init;
     cos_lookup_cb = cos_lookup;
@@ -315,6 +321,8 @@ void layer_remove_from_parent(Layer *child) { layer_remove_from_parent_cb(child)
 void layer_add_child(Layer *parent, Layer *child) { layer_add_child_cb(parent, child); }
 GRect layer_get_frame(Layer *layer) { return layer_get_frame_cb(layer); }
 void layer_set_frame(Layer *layer, GRect frame) { layer_set_frame_cb(layer, frame); }
+GRect layer_get_bounds(Layer *layer) { return layer_get_bounds_cb(layer); }
+void layer_set_bounds(Layer *layer, GRect frame) { layer_set_bounds_cb(layer, frame); }
 void layer_set_hidden(Layer *layer, bool hidden) { layer_set_hidden_cb(layer, hidden); }
 void layer_init(Layer *layer, GRect frame) { layer_init_cb(layer, frame); }
 int32_t cos_lookup(int32_t angle) { return cos_lookup_cb(angle); }
