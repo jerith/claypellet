@@ -51,6 +51,10 @@ class PebbleGraphicsContext(object):
     COLOR_WHITE = (255, 255, 255, 255)
     COLOR_CLEAR = (255, 127, 0, 0)
 
+    ALIGN_LEFT = 'left'
+    ALIGN_CENTER = 'center'
+    ALIGN_RIGHT = 'right'
+
     stroke_color = COLOR_BLACK
     fill_color = COLOR_BLACK
     text_color = COLOR_BLACK
@@ -93,15 +97,30 @@ class PebbleGraphicsContext(object):
 
         self.surface.blit(surface, rect.topleft)
 
-    def draw_text(self, text, font, box):
+    def draw_text(self, text, font, box, alignment):
         # TODO: overflow, alignment, layout(?)
-        text_surface = self.surface.subsurface(mkrect(box))
+        rect = mkrect(box)
+        text_surface = pygame.Surface(rect.size).convert_alpha()
         dfont = self.get_dfont(font)
-        left, top = 0, 0
+        left, top, width = 0, 0, 0
+
         for ch in text:
             glyph = dfont.get_glyph(ch)
             glyph.blit_to(text_surface, (left, top), self.text_color)
+            width = left + glyph.rect.right
             left += glyph.advance
+
+        text_rect = text_surface.get_rect()
+        text_rect.width = width
+
+        if alignment == self.ALIGN_LEFT:
+            text_rect.topleft = rect.topleft
+        elif alignment == self.ALIGN_CENTER:
+            text_rect.midtop = rect.midtop
+        elif alignment == self.ALIGN_RIGHT:
+            text_rect.topright = rect.topright
+
+        self.surface.blit(text_surface, text_rect)
 
 
 class PebbleDisplayFont(object):

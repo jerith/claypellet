@@ -240,6 +240,13 @@ class PebbleHarness(PebbleHarnessBase):
             self.lib.GColorWhite: gctx.COLOR_WHITE,
         }[color]
 
+    def _translate_align(self, gctx, align):
+        return {
+            self.lib.GTextAlignmentLeft: gctx.ALIGN_LEFT,
+            self.lib.GTextAlignmentCenter: gctx.ALIGN_CENTER,
+            self.lib.GTextAlignmentRight: gctx.ALIGN_RIGHT,
+        }[align]
+
     def graphics_context_set_stroke_color(self, gctxp, color):
         gctx = self.get_graphics_context(gctxp)
         gctx.stroke_color = self._translate_color(gctx, color)
@@ -263,7 +270,8 @@ class PebbleHarness(PebbleHarnessBase):
     def graphics_text_draw(self, gctxp, text, font, box, overflow_mode,
                            alignment, layout):
         gctx = self.get_graphics_context(gctxp)
-        gctx.draw_text(ffi.string(text), self.get_custom_font(font), box)
+        gctx.draw_text(ffi.string(text), self.get_custom_font(font), box,
+                       self._translate_align(gctx, alignment))
 
     # Hardware - Backlight
 
@@ -536,8 +544,8 @@ class PebbleTextLayer(object):
         if (tl.text != ffi.NULL and len(ffi.string(tl.text)) > 0):
             h.graphics_context_set_text_color(gctxp, self.text_color)
             # TODO: Fix this.
-            h.graphics_text_draw(
-                gctxp, tl.text, tl.font, layerp.bounds, 0, 0, ffi.NULL)
+            h.graphics_text_draw(gctxp, tl.text, tl.font, layerp.bounds,
+                                 0, self.text_alignment, ffi.NULL)
 
 
 class PebbleResourceHandle(object):
