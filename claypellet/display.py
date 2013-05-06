@@ -100,18 +100,17 @@ class PebbleGraphicsContext(object):
     def draw_text(self, text, font, box, alignment):
         # TODO: overflow, alignment, layout(?)
         rect = mkrect(box)
-        text_surface = pygame.Surface(rect.size).convert_alpha()
+        text_surface = self.tempsurface(rect.size)
         dfont = self.get_dfont(font)
         left, top, width = 0, 0, 0
 
         for ch in text:
             glyph = dfont.get_glyph(ch)
             glyph.blit_to(text_surface, (left, top), self.text_color)
-            width = left + glyph.rect.right
             left += glyph.advance
 
         text_rect = text_surface.get_rect()
-        text_rect.width = width
+        text_rect.width = left
 
         if alignment == self.ALIGN_LEFT:
             text_rect.topleft = rect.topleft
