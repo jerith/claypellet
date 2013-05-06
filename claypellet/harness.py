@@ -101,7 +101,7 @@ class PebbleHarness(PebbleHarnessBase):
                 units_changed = self.lib.SECOND_UNIT
 
             tick_units = self.handlers['tick_info']['tick_units']
-            if units_changed is not None and units_changed <= tick_units:
+            if units_changed is not None and units_changed >= tick_units:
                 tick_eventp = ffi.new('PebbleTickEvent *', {
                     'units_changed': units_changed,
                     'tick_time': timep,
