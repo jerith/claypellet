@@ -118,7 +118,7 @@ class PebbleHarness(PebbleHarnessBase):
         timep.tm_mday = time_tick.tm_mday
         timep.tm_mon = time_tick.tm_mon
         timep.tm_year = time_tick.tm_year - 1900
-        timep.tm_wday = (time_tick.tm_wday + 6) % 7
+        timep.tm_wday = (time_tick.tm_wday + 1) % 7
         timep.tm_yday = time_tick.tm_yday
         timep.tm_isdst = time_tick.tm_isdst
 
