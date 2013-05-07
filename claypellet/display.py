@@ -1,4 +1,5 @@
 import operator
+from datetime import datetime
 
 import pygame
 import pygame.mask
@@ -7,16 +8,19 @@ import pygame.event
 import pygame.display
 import pygame.time
 import pygame.image
-from pygame.locals import SWSURFACE, QUIT, KEYDOWN, K_ESCAPE, BLEND_MIN
+from pygame.locals import SWSURFACE, QUIT, KEYDOWN, K_ESCAPE, K_s, BLEND_MIN
 
 
 class PebbleDisplay(object):
     def __init__(self, harness):
         self.harness = harness
-        pygame.init()
-        surface = pygame.display.set_mode((154, 178), SWSURFACE)
-        surface.fill((127, 127, 127))
+        self.display = self.setup_display((154, 178))
+        self.display.fill((127, 127, 127))
         self.fonts = {}
+
+    def setup_display(self, screen_size):
+        pygame.display.init()
+        return pygame.display.set_mode(screen_size, SWSURFACE)
 
     def run(self):
         clock = pygame.time.Clock()
@@ -29,18 +33,31 @@ class PebbleDisplay(object):
                 elif ev.type == KEYDOWN:
                     if ev.key == K_ESCAPE:
                         return
+                    elif ev.key == K_s:
+                        self.screenshot()
             should_render = self.harness.tick()
             if should_render:
                 self.render()
                 pygame.display.flip()
             clock.tick(25)
 
+    def get_screen_rect(self):
+        rect = pygame.Rect(0, 0, 144, 168)
+        rect.center = self.display.get_rect().center
+        return rect
+
     def render(self):
-        dsurface = pygame.display.get_surface()
-        surface = pygame.Surface((144, 168)).convert_alpha()
+        screen_rect = self.get_screen_rect()
+        surface = pygame.Surface(screen_rect.size).convert_alpha(self.display)
         gctx = PebbleGraphicsContext(self, surface)
         self.harness.render(gctx)
-        dsurface.blit(surface, pygame.Rect(5, 5, 144, 168))
+        self.display.blit(surface, screen_rect)
+
+    def screenshot(self):
+        filename = "claypellet-screenshot-%s.png" % datetime.now().isoformat()
+        surface = self.display.subsurface(self.get_screen_rect())
+        pygame.image.save(surface, filename)
+        print "Screenshot: %s" % filename
 
 
 def mkrect(grect):
