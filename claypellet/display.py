@@ -8,7 +8,8 @@ import pygame.event
 import pygame.display
 import pygame.time
 import pygame.image
-from pygame.locals import SWSURFACE, QUIT, KEYDOWN, K_ESCAPE, K_s, BLEND_MIN
+from pygame.locals import SWSURFACE, QUIT, KEYDOWN, BLEND_MIN
+from pygame.locals import K_ESCAPE, K_q, K_s
 
 
 class PebbleDisplay(object):
@@ -31,7 +32,7 @@ class PebbleDisplay(object):
                 if ev.type == QUIT:
                     return
                 elif ev.type == KEYDOWN:
-                    if ev.key == K_ESCAPE:
+                    if ev.key in (K_q, K_ESCAPE):
                         return
                     elif ev.key == K_s:
                         self.screenshot()
