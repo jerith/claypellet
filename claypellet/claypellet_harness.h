@@ -601,7 +601,6 @@ void call_setup_callbacks(t_animation_init_cb animation_init,
  * gets generated.
  ***************************************************************************/
 
-/* void pbl_main(void *params); */
 void call_main(void);
 void deinit_claypellet(void);
 void init_claypellet(char *path);

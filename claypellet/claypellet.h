@@ -205,7 +205,6 @@ typedef void (*t_clock_copy_time_string_cb)(char *buffer, uint8_t size);
  * gets generated.
  ***************************************************************************/
 
-/* void pbl_main(void *params); */
 void call_main(void);
 void deinit_claypellet(void);
 void init_claypellet(char *path);
