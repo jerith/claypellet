@@ -5,4 +5,4 @@ includes="-I. -I./include -I./build -I${claypellet_src_path}"
 
 ./waf build
 
-gcc -shared -std=c99 ${includes} -o claypellet_app.so ${claypellet_src_path}/claypellet.c src/*.c
+gcc -shared -std=c99 ${includes} -o build/claypellet_app.so ${claypellet_src_path}/claypellet.c src/*.c
