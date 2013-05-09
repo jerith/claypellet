@@ -3,8 +3,9 @@
  * gets generated.
  ***************************************************************************/
 
-void pbl_main(void *params);
-
+void call_main(void);
+void deinit_claypellet(void);
+void init_claypellet(char *path);
 
 struct ClayResourceHandle {
     uint32_t file_id;

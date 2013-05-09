@@ -1,13 +1,16 @@
 claypellet
 ==========
 
-Pebble application execution harness, aimed mostly at layout preview.
-
-This is very experimental at present. I have implemented just enough to get one
-of my basic watchface apps working.
+Pebble application execution harness, aimed mostly at layout preview and basic
+functionality prototyping.
 
 The name comes from the fact that claypellet is more malleable than a Pebble
 and also significatly less solid and robust.
+
+This is very experimental at present. I have implemented just enough to get one
+of my basic watchface apps working. If you need any help getting it working or
+have suggestions for features, I generally hang out in #pebble on the freenode
+IRC network.
 
 License
 -------
@@ -36,15 +39,31 @@ release version at the time of writing.
 
 You'll also need [pygame](http://pygame.org/) which I'm using for the display.
 
-To compile your app into a library than can be loaded by claypellet, you need
-to `./waf build` and then invoke something along the lines of the following:
+With all the dependencies installed, you should be able to run the following
+commands in you project directory to get your app running in the simulator:
 
-    gcc -c -shared -std=c99 -I. -I./include -I./build -o libpeb.so src/thing.c
+    /path/to/claypebble/compile_pebble_app.sh
+    /path/to/claypebble/run_pebble_app.py
+
+This assumes that you have a standard project layout with all the source files
+in `src/*.c` and built files in `build/`.
 
 If you're using OSX, you might need to drop a copy of `pebble_app.h` in the
 current directory and modify it to change `((section (".pbl_header")))` into
 `((section ("__DATA,.pbl_header")))`. (I had to do this, anyway. I haven't
 tested on any other operating systems, so YMMV.)
+
+How to use it
+-------------
+
+Once you have your app running in claypebble, you can push some buttons on your
+keyboard to make things happen.
+
+  * `esc` or `q` to quit.
+  * `r` to reload the app. You'll have to run `compile_pebble_app.sh` to
+    recompile if you've made any changes.
+  * `s` to take a screenshot. (Written to the current directory with a
+    timestamped filename.
 
 Bugs and issues
 ---------------

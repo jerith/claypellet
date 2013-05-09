@@ -11,30 +11,37 @@ from .harness_hooks import PebbleHarnessBase
 package_dir = os.path.dirname(__file__)
 
 cdef_file = os.path.join(package_dir, 'claypellet_cdef.c')
-api_file = os.path.join(package_dir, 'api_functions.h')
-h_file = os.path.join(package_dir, 'claypellet.h')
-c_file = os.path.join(package_dir, 'claypellet.c')
+h_file = os.path.join(package_dir, 'claypellet_harness.h')
+c_file = os.path.join(package_dir, 'claypellet_harness.c')
 
 
 ffi = FFI()
-ffi.cdef('\n'.join(open(f).read() for f in (cdef_file, api_file, h_file)))
+ffi.cdef('\n'.join(open(f).read() for f in (cdef_file, h_file)))
 
 
 class PebbleHarness(PebbleHarnessBase):
-    def __init__(self, app_lib, resources_file,
-                 include_dirs=None, library_dirs=None):
+    def __init__(self, app_lib, resources_file, include_dirs=None):
         self.resources_file = resources_file
+        if '/' not in app_lib:
+            app_lib = './' + app_lib
+        self.app_lib = app_lib
 
         if include_dirs is None:
-            include_dirs = [package_dir, './include', './build']
-        if library_dirs is None:
-            library_dirs = ['.']
+            include_dirs = [package_dir, './include']
 
-        self.lib = ffi.verify(
-            open(c_file).read(), include_dirs=include_dirs,
-            library_dirs=library_dirs, libraries=[app_lib])
+        self.lib = ffi.verify(open(c_file).read(), include_dirs=include_dirs)
+        print "Setting up callbacks..."
         self.setup_callbacks()
+        self.load_app()
 
+    def load_app(self, unload=False):
+        if unload:
+            self.lib.deinit_claypellet()
+
+        print "Loading app..."
+        self.lib.init_claypellet(self.app_lib)
+        self.lib.call_setup_callbacks(*self._callbacks)
+        print "App loaded."
         self.windows = {}
         self.window_stack = []
         self.layers = {}
@@ -70,7 +77,8 @@ class PebbleHarness(PebbleHarnessBase):
         return self.custom_fonts[handle.file_id]
 
     def call_main(self):
-        self.lib.pbl_main(ffi.NULL)
+        self.lib.call_main()
+        # self.app.pbl_main(ffi.NULL)
 
     def tick(self):
         last_tick = self.last_tick

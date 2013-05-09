@@ -26,79 +26,191 @@ t_animation_schedule_cb animation_schedule_cb;
 t_animation_unschedule_cb animation_unschedule_cb;
 t_animation_unschedule_all_cb animation_unschedule_all_cb;
 t_animation_is_scheduled_cb animation_is_scheduled_cb;
-t_property_animation_init_layer_frame_cb property_animation_init_layer_frame_cb;
+t_app_timer_send_event_cb app_timer_send_event_cb;
+t_app_timer_cancel_event_cb app_timer_cancel_event_cb;
 t_app_event_loop_cb app_event_loop_cb;
 t_bmp_init_container_cb bmp_init_container_cb;
 t_bmp_deinit_container_cb bmp_deinit_container_cb;
-t_graphics_draw_bitmap_in_rect_cb graphics_draw_bitmap_in_rect_cb;
-t_rotbmp_deinit_container_cb rotbmp_deinit_container_cb;
-t_rotbmp_init_container_cb rotbmp_init_container_cb;
-t_rotbmp_pair_deinit_container_cb rotbmp_pair_deinit_container_cb;
-t_rotbmp_pair_init_container_cb rotbmp_pair_init_container_cb;
-t_rotbmp_pair_layer_set_src_ic_cb rotbmp_pair_layer_set_src_ic_cb;
-t_rotbmp_pair_layer_set_angle_cb rotbmp_pair_layer_set_angle_cb;
-t_app_get_current_graphics_context_cb app_get_current_graphics_context_cb;
+t_cos_lookup_cb cos_lookup_cb;
+t_fonts_get_system_font_cb fonts_get_system_font_cb;
+t_fonts_load_custom_font_cb fonts_load_custom_font_cb;
+t_fonts_unload_custom_font_cb fonts_unload_custom_font_cb;
+t_graphics_context_set_stroke_color_cb graphics_context_set_stroke_color_cb;
+t_graphics_context_set_fill_color_cb graphics_context_set_fill_color_cb;
+t_graphics_context_set_text_color_cb graphics_context_set_text_color_cb;
+t_graphics_context_set_compositing_mode_cb graphics_context_set_compositing_mode_cb;
 t_graphics_draw_pixel_cb graphics_draw_pixel_cb;
 t_graphics_draw_line_cb graphics_draw_line_cb;
 t_graphics_fill_rect_cb graphics_fill_rect_cb;
 t_graphics_draw_circle_cb graphics_draw_circle_cb;
 t_graphics_fill_circle_cb graphics_fill_circle_cb;
 t_graphics_draw_round_rect_cb graphics_draw_round_rect_cb;
+t_get_time_cb get_time_cb;
 t_gpath_init_cb gpath_init_cb;
 t_gpath_move_to_cb gpath_move_to_cb;
 t_gpath_rotate_to_cb gpath_rotate_to_cb;
 t_gpath_draw_outline_cb gpath_draw_outline_cb;
 t_gpath_draw_filled_cb gpath_draw_filled_cb;
-t_graphics_context_set_stroke_color_cb graphics_context_set_stroke_color_cb;
-t_graphics_context_set_fill_color_cb graphics_context_set_fill_color_cb;
-t_graphics_context_set_text_color_cb graphics_context_set_text_color_cb;
-t_graphics_context_set_compositing_mode_cb graphics_context_set_compositing_mode_cb;
-t_graphics_text_draw_cb graphics_text_draw_cb;
-t_light_enable_cb light_enable_cb;
-t_light_enable_interaction_cb light_enable_interaction_cb;
-t_window_set_click_config_provider_cb window_set_click_config_provider_cb;
-t_vibes_double_pulse_cb vibes_double_pulse_cb;
-t_vibes_enqueue_custom_pattern_cb vibes_enqueue_custom_pattern_cb;
-t_vibes_long_pulse_cb vibes_long_pulse_cb;
-t_vibes_short_pulse_cb vibes_short_pulse_cb;
+t_grect_center_point_cb grect_center_point_cb;
 t_layer_mark_dirty_cb layer_mark_dirty_cb;
 t_layer_remove_from_parent_cb layer_remove_from_parent_cb;
 t_layer_add_child_cb layer_add_child_cb;
 t_layer_get_frame_cb layer_get_frame_cb;
 t_layer_set_frame_cb layer_set_frame_cb;
-t_layer_get_bounds_cb layer_get_bounds_cb;
-t_layer_set_bounds_cb layer_set_bounds_cb;
 t_layer_set_hidden_cb layer_set_hidden_cb;
 t_layer_init_cb layer_init_cb;
-t_cos_lookup_cb cos_lookup_cb;
-t_sin_lookup_cb sin_lookup_cb;
-t_grect_center_point_cb grect_center_point_cb;
+t_light_enable_cb light_enable_cb;
+t_light_enable_interaction_cb light_enable_interaction_cb;
+t_psleep_cb psleep_cb;
 t_resource_init_current_app_cb resource_init_current_app_cb;
 t_resource_get_handle_cb resource_get_handle_cb;
 t_resource_load_cb resource_load_cb;
 t_resource_load_byte_range_cb resource_load_byte_range_cb;
 t_resource_size_cb resource_size_cb;
-t_fonts_get_system_font_cb fonts_get_system_font_cb;
-t_fonts_load_custom_font_cb fonts_load_custom_font_cb;
-t_fonts_unload_custom_font_cb fonts_unload_custom_font_cb;
-t_text_layer_init_cb text_layer_init_cb;
-t_text_layer_get_text_cb text_layer_get_text_cb;
-t_text_layer_set_text_cb text_layer_set_text_cb;
-t_text_layer_set_background_color_cb text_layer_set_background_color_cb;
-t_text_layer_set_font_cb text_layer_set_font_cb;
-t_text_layer_set_text_alignment_cb text_layer_set_text_alignment_cb;
-t_text_layer_set_text_color_cb text_layer_set_text_color_cb;
-t_clock_is_24h_style_cb clock_is_24h_style_cb;
-t_get_time_cb get_time_cb;
-t_string_format_time_cb string_format_time_cb;
-t_psleep_cb psleep_cb;
-t_app_timer_send_event_cb app_timer_send_event_cb;
-t_app_timer_cancel_event_cb app_timer_cancel_event_cb;
+t_rotbmp_deinit_container_cb rotbmp_deinit_container_cb;
+t_rotbmp_init_container_cb rotbmp_init_container_cb;
+t_rotbmp_pair_deinit_container_cb rotbmp_pair_deinit_container_cb;
+t_rotbmp_pair_init_container_cb rotbmp_pair_init_container_cb;
+t_rotbmp_pair_layer_set_src_ic_cb rotbmp_pair_layer_set_src_ic_cb;
+t_rotbmp_pair_layer_set_angle_cb rotbmp_pair_layer_set_angle_cb;
 t_window_init_cb window_init_cb;
 t_window_stack_push_cb window_stack_push_cb;
+t_window_set_click_config_provider_cb window_set_click_config_provider_cb;
 t_window_set_background_color_cb window_set_background_color_cb;
 t_window_render_cb window_render_cb;
 t_window_set_fullscreen_cb window_set_fullscreen_cb;
+t_sin_lookup_cb sin_lookup_cb;
+t_string_format_time_cb string_format_time_cb;
+t_text_layer_init_cb text_layer_init_cb;
+t_text_layer_get_text_cb text_layer_get_text_cb;
+t_text_layer_set_text_cb text_layer_set_text_cb;
+t_text_layer_set_font_cb text_layer_set_font_cb;
+t_text_layer_set_text_color_cb text_layer_set_text_color_cb;
+t_text_layer_set_background_color_cb text_layer_set_background_color_cb;
+t_vibes_double_pulse_cb vibes_double_pulse_cb;
+t_vibes_enqueue_custom_pattern_cb vibes_enqueue_custom_pattern_cb;
+t_vibes_long_pulse_cb vibes_long_pulse_cb;
+t_vibes_short_pulse_cb vibes_short_pulse_cb;
+t_app_get_current_graphics_context_cb app_get_current_graphics_context_cb;
+t_clock_is_24h_style_cb clock_is_24h_style_cb;
+t_property_animation_init_layer_frame_cb property_animation_init_layer_frame_cb;
+t_text_layer_set_text_alignment_cb text_layer_set_text_alignment_cb;
+t_graphics_draw_bitmap_in_rect_cb graphics_draw_bitmap_in_rect_cb;
+t_graphics_text_draw_cb graphics_text_draw_cb;
+t_layer_set_bounds_cb layer_set_bounds_cb;
+t_layer_get_bounds_cb layer_get_bounds_cb;
+t_layer_set_update_proc_cb layer_set_update_proc_cb;
+t_layer_get_window_cb layer_get_window_cb;
+t_layer_remove_child_layers_cb layer_remove_child_layers_cb;
+t_layer_insert_below_sibling_cb layer_insert_below_sibling_cb;
+t_layer_insert_above_sibling_cb layer_insert_above_sibling_cb;
+t_layer_get_hidden_cb layer_get_hidden_cb;
+t_layer_set_clips_cb layer_set_clips_cb;
+t_layer_get_clips_cb layer_get_clips_cb;
+t_text_layer_get_max_used_size_cb text_layer_get_max_used_size_cb;
+t_text_layer_set_size_cb text_layer_set_size_cb;
+t_text_layer_set_overflow_mode_cb text_layer_set_overflow_mode_cb;
+t_graphics_text_layout_get_max_used_size_cb graphics_text_layout_get_max_used_size_cb;
+t_inverter_layer_init_cb inverter_layer_init_cb;
+t_bitmap_layer_init_cb bitmap_layer_init_cb;
+t_bitmap_layer_set_bitmap_cb bitmap_layer_set_bitmap_cb;
+t_bitmap_layer_set_alignment_cb bitmap_layer_set_alignment_cb;
+t_bitmap_layer_set_background_color_cb bitmap_layer_set_background_color_cb;
+t_bitmap_layer_set_compositing_mode_cb bitmap_layer_set_compositing_mode_cb;
+t_heap_bitmap_init_cb heap_bitmap_init_cb;
+t_heap_bitmap_deinit_cb heap_bitmap_deinit_cb;
+t_click_recognizer_get_button_id_cb click_recognizer_get_button_id_cb;
+t_click_number_of_clicks_counted_cb click_number_of_clicks_counted_cb;
+t_menu_cell_basic_draw_cb menu_cell_basic_draw_cb;
+t_menu_cell_title_draw_cb menu_cell_title_draw_cb;
+t_menu_cell_basic_header_draw_cb menu_cell_basic_header_draw_cb;
+t_menu_layer_init_cb menu_layer_init_cb;
+t_menu_layer_get_layer_cb menu_layer_get_layer_cb;
+t_menu_layer_set_callbacks_cb menu_layer_set_callbacks_cb;
+t_menu_layer_set_click_config_onto_window_cb menu_layer_set_click_config_onto_window_cb;
+t_menu_layer_set_selected_next_cb menu_layer_set_selected_next_cb;
+t_menu_layer_set_selected_index_cb menu_layer_set_selected_index_cb;
+t_menu_layer_reload_data_cb menu_layer_reload_data_cb;
+t_menu_index_compare_cb menu_index_compare_cb;
+t_scroll_layer_init_cb scroll_layer_init_cb;
+t_scroll_layer_add_child_cb scroll_layer_add_child_cb;
+t_scroll_layer_set_click_config_onto_window_cb scroll_layer_set_click_config_onto_window_cb;
+t_scroll_layer_set_callbacks_cb scroll_layer_set_callbacks_cb;
+t_scroll_layer_set_context_cb scroll_layer_set_context_cb;
+t_scroll_layer_set_content_offset_cb scroll_layer_set_content_offset_cb;
+t_scroll_layer_get_content_offset_cb scroll_layer_get_content_offset_cb;
+t_scroll_layer_set_content_size_cb scroll_layer_set_content_size_cb;
+t_scroll_layer_get_content_size_cb scroll_layer_get_content_size_cb;
+t_scroll_layer_set_frame_cb scroll_layer_set_frame_cb;
+t_scroll_layer_scroll_up_click_handler_cb scroll_layer_scroll_up_click_handler_cb;
+t_scroll_layer_scroll_down_click_handler_cb scroll_layer_scroll_down_click_handler_cb;
+t_simple_menu_layer_init_cb simple_menu_layer_init_cb;
+t_simple_menu_layer_get_layer_cb simple_menu_layer_get_layer_cb;
+t_simple_menu_layer_get_selected_index_cb simple_menu_layer_get_selected_index_cb;
+t_simple_menu_layer_set_selected_index_cb simple_menu_layer_set_selected_index_cb;
+t_window_deinit_cb window_deinit_cb;
+t_window_set_click_config_provider_with_context_cb window_set_click_config_provider_with_context_cb;
+t_window_get_click_config_provider_cb window_get_click_config_provider_cb;
+t_window_set_window_handlers_cb window_set_window_handlers_cb;
+t_window_get_root_layer_cb window_get_root_layer_cb;
+t_window_get_fullscreen_cb window_get_fullscreen_cb;
+t_window_set_status_bar_icon_cb window_set_status_bar_icon_cb;
+t_window_is_loaded_cb window_is_loaded_cb;
+t_window_stack_pop_cb window_stack_pop_cb;
+t_window_stack_pop_all_cb window_stack_pop_all_cb;
+t_window_stack_contains_window_cb window_stack_contains_window_cb;
+t_window_stack_get_top_window_cb window_stack_get_top_window_cb;
+t_window_stack_remove_cb window_stack_remove_cb;
+t_property_animation_init_cb property_animation_init_cb;
+t_property_animation_update_int16_cb property_animation_update_int16_cb;
+t_property_animation_update_gpoint_cb property_animation_update_gpoint_cb;
+t_property_animation_update_grect_cb property_animation_update_grect_cb;
+t_app_message_register_callbacks_cb app_message_register_callbacks_cb;
+t_app_message_deregister_callbacks_cb app_message_deregister_callbacks_cb;
+t_app_message_out_get_cb app_message_out_get_cb;
+t_app_message_out_send_cb app_message_out_send_cb;
+t_app_message_out_release_cb app_message_out_release_cb;
+t_app_sync_init_cb app_sync_init_cb;
+t_app_sync_deinit_cb app_sync_deinit_cb;
+t_app_sync_set_cb app_sync_set_cb;
+t_app_sync_get_cb app_sync_get_cb;
+t_dict_write_begin_cb dict_write_begin_cb;
+t_dict_write_data_cb dict_write_data_cb;
+t_dict_write_cstring_cb dict_write_cstring_cb;
+t_dict_write_int_cb dict_write_int_cb;
+t_dict_write_uint8_cb dict_write_uint8_cb;
+t_dict_write_uint16_cb dict_write_uint16_cb;
+t_dict_write_uint32_cb dict_write_uint32_cb;
+t_dict_write_int8_cb dict_write_int8_cb;
+t_dict_write_int16_cb dict_write_int16_cb;
+t_dict_write_int32_cb dict_write_int32_cb;
+t_dict_write_end_cb dict_write_end_cb;
+t_dict_read_begin_from_buffer_cb dict_read_begin_from_buffer_cb;
+t_dict_read_next_cb dict_read_next_cb;
+t_dict_read_first_cb dict_read_first_cb;
+t_dict_serialize_tuplets_cb dict_serialize_tuplets_cb;
+t_dict_serialize_tuplets_to_buffer_cb dict_serialize_tuplets_to_buffer_cb;
+t_dict_serialize_tuplets_to_buffer_with_iter_cb dict_serialize_tuplets_to_buffer_with_iter_cb;
+t_dict_write_tuplet_cb dict_write_tuplet_cb;
+t_dict_calc_buffer_size_from_tuplets_cb dict_calc_buffer_size_from_tuplets_cb;
+t_dict_merge_cb dict_merge_cb;
+t_dict_find_cb dict_find_cb;
+t_action_bar_layer_init_cb action_bar_layer_init_cb;
+t_action_bar_layer_set_context_cb action_bar_layer_set_context_cb;
+t_action_bar_layer_set_click_config_provider_cb action_bar_layer_set_click_config_provider_cb;
+t_action_bar_layer_set_icon_cb action_bar_layer_set_icon_cb;
+t_action_bar_layer_clear_icon_cb action_bar_layer_clear_icon_cb;
+t_action_bar_layer_add_to_window_cb action_bar_layer_add_to_window_cb;
+t_action_bar_layer_remove_from_window_cb action_bar_layer_remove_from_window_cb;
+t_action_bar_layer_set_background_color_cb action_bar_layer_set_background_color_cb;
+t_number_window_init_cb number_window_init_cb;
+t_number_window_set_label_cb number_window_set_label_cb;
+t_number_window_set_max_cb number_window_set_max_cb;
+t_number_window_set_min_cb number_window_set_min_cb;
+t_number_window_set_value_cb number_window_set_value_cb;
+t_number_window_set_step_size_cb number_window_set_step_size_cb;
+t_number_window_get_value_cb number_window_get_value_cb;
+t_clock_copy_time_string_cb clock_copy_time_string_cb;
 
 void setup_callbacks(t_animation_init_cb animation_init,
                      t_animation_set_delay_cb animation_set_delay,
@@ -111,79 +223,191 @@ void setup_callbacks(t_animation_init_cb animation_init,
                      t_animation_unschedule_cb animation_unschedule,
                      t_animation_unschedule_all_cb animation_unschedule_all,
                      t_animation_is_scheduled_cb animation_is_scheduled,
-                     t_property_animation_init_layer_frame_cb property_animation_init_layer_frame,
+                     t_app_timer_send_event_cb app_timer_send_event,
+                     t_app_timer_cancel_event_cb app_timer_cancel_event,
                      t_app_event_loop_cb app_event_loop,
                      t_bmp_init_container_cb bmp_init_container,
                      t_bmp_deinit_container_cb bmp_deinit_container,
-                     t_graphics_draw_bitmap_in_rect_cb graphics_draw_bitmap_in_rect,
-                     t_rotbmp_deinit_container_cb rotbmp_deinit_container,
-                     t_rotbmp_init_container_cb rotbmp_init_container,
-                     t_rotbmp_pair_deinit_container_cb rotbmp_pair_deinit_container,
-                     t_rotbmp_pair_init_container_cb rotbmp_pair_init_container,
-                     t_rotbmp_pair_layer_set_src_ic_cb rotbmp_pair_layer_set_src_ic,
-                     t_rotbmp_pair_layer_set_angle_cb rotbmp_pair_layer_set_angle,
-                     t_app_get_current_graphics_context_cb app_get_current_graphics_context,
+                     t_cos_lookup_cb cos_lookup,
+                     t_fonts_get_system_font_cb fonts_get_system_font,
+                     t_fonts_load_custom_font_cb fonts_load_custom_font,
+                     t_fonts_unload_custom_font_cb fonts_unload_custom_font,
+                     t_graphics_context_set_stroke_color_cb graphics_context_set_stroke_color,
+                     t_graphics_context_set_fill_color_cb graphics_context_set_fill_color,
+                     t_graphics_context_set_text_color_cb graphics_context_set_text_color,
+                     t_graphics_context_set_compositing_mode_cb graphics_context_set_compositing_mode,
                      t_graphics_draw_pixel_cb graphics_draw_pixel,
                      t_graphics_draw_line_cb graphics_draw_line,
                      t_graphics_fill_rect_cb graphics_fill_rect,
                      t_graphics_draw_circle_cb graphics_draw_circle,
                      t_graphics_fill_circle_cb graphics_fill_circle,
                      t_graphics_draw_round_rect_cb graphics_draw_round_rect,
+                     t_get_time_cb get_time,
                      t_gpath_init_cb gpath_init,
                      t_gpath_move_to_cb gpath_move_to,
                      t_gpath_rotate_to_cb gpath_rotate_to,
                      t_gpath_draw_outline_cb gpath_draw_outline,
                      t_gpath_draw_filled_cb gpath_draw_filled,
-                     t_graphics_context_set_stroke_color_cb graphics_context_set_stroke_color,
-                     t_graphics_context_set_fill_color_cb graphics_context_set_fill_color,
-                     t_graphics_context_set_text_color_cb graphics_context_set_text_color,
-                     t_graphics_context_set_compositing_mode_cb graphics_context_set_compositing_mode,
-                     t_graphics_text_draw_cb graphics_text_draw,
-                     t_light_enable_cb light_enable,
-                     t_light_enable_interaction_cb light_enable_interaction,
-                     t_window_set_click_config_provider_cb window_set_click_config_provider,
-                     t_vibes_double_pulse_cb vibes_double_pulse,
-                     t_vibes_enqueue_custom_pattern_cb vibes_enqueue_custom_pattern,
-                     t_vibes_long_pulse_cb vibes_long_pulse,
-                     t_vibes_short_pulse_cb vibes_short_pulse,
+                     t_grect_center_point_cb grect_center_point,
                      t_layer_mark_dirty_cb layer_mark_dirty,
                      t_layer_remove_from_parent_cb layer_remove_from_parent,
                      t_layer_add_child_cb layer_add_child,
                      t_layer_get_frame_cb layer_get_frame,
                      t_layer_set_frame_cb layer_set_frame,
-                     t_layer_get_bounds_cb layer_get_bounds,
-                     t_layer_set_bounds_cb layer_set_bounds,
                      t_layer_set_hidden_cb layer_set_hidden,
                      t_layer_init_cb layer_init,
-                     t_cos_lookup_cb cos_lookup,
-                     t_sin_lookup_cb sin_lookup,
-                     t_grect_center_point_cb grect_center_point,
+                     t_light_enable_cb light_enable,
+                     t_light_enable_interaction_cb light_enable_interaction,
+                     t_psleep_cb psleep,
                      t_resource_init_current_app_cb resource_init_current_app,
                      t_resource_get_handle_cb resource_get_handle,
                      t_resource_load_cb resource_load,
                      t_resource_load_byte_range_cb resource_load_byte_range,
                      t_resource_size_cb resource_size,
-                     t_fonts_get_system_font_cb fonts_get_system_font,
-                     t_fonts_load_custom_font_cb fonts_load_custom_font,
-                     t_fonts_unload_custom_font_cb fonts_unload_custom_font,
+                     t_rotbmp_deinit_container_cb rotbmp_deinit_container,
+                     t_rotbmp_init_container_cb rotbmp_init_container,
+                     t_rotbmp_pair_deinit_container_cb rotbmp_pair_deinit_container,
+                     t_rotbmp_pair_init_container_cb rotbmp_pair_init_container,
+                     t_rotbmp_pair_layer_set_src_ic_cb rotbmp_pair_layer_set_src_ic,
+                     t_rotbmp_pair_layer_set_angle_cb rotbmp_pair_layer_set_angle,
+                     t_window_init_cb window_init,
+                     t_window_stack_push_cb window_stack_push,
+                     t_window_set_click_config_provider_cb window_set_click_config_provider,
+                     t_window_set_background_color_cb window_set_background_color,
+                     t_window_render_cb window_render,
+                     t_window_set_fullscreen_cb window_set_fullscreen,
+                     t_sin_lookup_cb sin_lookup,
+                     t_string_format_time_cb string_format_time,
                      t_text_layer_init_cb text_layer_init,
                      t_text_layer_get_text_cb text_layer_get_text,
                      t_text_layer_set_text_cb text_layer_set_text,
-                     t_text_layer_set_background_color_cb text_layer_set_background_color,
                      t_text_layer_set_font_cb text_layer_set_font,
-                     t_text_layer_set_text_alignment_cb text_layer_set_text_alignment,
                      t_text_layer_set_text_color_cb text_layer_set_text_color,
+                     t_text_layer_set_background_color_cb text_layer_set_background_color,
+                     t_vibes_double_pulse_cb vibes_double_pulse,
+                     t_vibes_enqueue_custom_pattern_cb vibes_enqueue_custom_pattern,
+                     t_vibes_long_pulse_cb vibes_long_pulse,
+                     t_vibes_short_pulse_cb vibes_short_pulse,
+                     t_app_get_current_graphics_context_cb app_get_current_graphics_context,
                      t_clock_is_24h_style_cb clock_is_24h_style,
-                     t_get_time_cb get_time,
-                     t_string_format_time_cb string_format_time,
-                     t_psleep_cb psleep,
-                     t_app_timer_send_event_cb app_timer_send_event,
-                     t_app_timer_cancel_event_cb app_timer_cancel_event,
-                     t_window_init_cb window_init,
-                     t_window_stack_push_cb window_stack_push,
-                     t_window_set_background_color_cb window_set_background_color,
-                     t_window_render_cb window_render,
-                     t_window_set_fullscreen_cb window_set_fullscreen) {
+                     t_property_animation_init_layer_frame_cb property_animation_init_layer_frame,
+                     t_text_layer_set_text_alignment_cb text_layer_set_text_alignment,
+                     t_graphics_draw_bitmap_in_rect_cb graphics_draw_bitmap_in_rect,
+                     t_graphics_text_draw_cb graphics_text_draw,
+                     t_layer_set_bounds_cb layer_set_bounds,
+                     t_layer_get_bounds_cb layer_get_bounds,
+                     t_layer_set_update_proc_cb layer_set_update_proc,
+                     t_layer_get_window_cb layer_get_window,
+                     t_layer_remove_child_layers_cb layer_remove_child_layers,
+                     t_layer_insert_below_sibling_cb layer_insert_below_sibling,
+                     t_layer_insert_above_sibling_cb layer_insert_above_sibling,
+                     t_layer_get_hidden_cb layer_get_hidden,
+                     t_layer_set_clips_cb layer_set_clips,
+                     t_layer_get_clips_cb layer_get_clips,
+                     t_text_layer_get_max_used_size_cb text_layer_get_max_used_size,
+                     t_text_layer_set_size_cb text_layer_set_size,
+                     t_text_layer_set_overflow_mode_cb text_layer_set_overflow_mode,
+                     t_graphics_text_layout_get_max_used_size_cb graphics_text_layout_get_max_used_size,
+                     t_inverter_layer_init_cb inverter_layer_init,
+                     t_bitmap_layer_init_cb bitmap_layer_init,
+                     t_bitmap_layer_set_bitmap_cb bitmap_layer_set_bitmap,
+                     t_bitmap_layer_set_alignment_cb bitmap_layer_set_alignment,
+                     t_bitmap_layer_set_background_color_cb bitmap_layer_set_background_color,
+                     t_bitmap_layer_set_compositing_mode_cb bitmap_layer_set_compositing_mode,
+                     t_heap_bitmap_init_cb heap_bitmap_init,
+                     t_heap_bitmap_deinit_cb heap_bitmap_deinit,
+                     t_click_recognizer_get_button_id_cb click_recognizer_get_button_id,
+                     t_click_number_of_clicks_counted_cb click_number_of_clicks_counted,
+                     t_menu_cell_basic_draw_cb menu_cell_basic_draw,
+                     t_menu_cell_title_draw_cb menu_cell_title_draw,
+                     t_menu_cell_basic_header_draw_cb menu_cell_basic_header_draw,
+                     t_menu_layer_init_cb menu_layer_init,
+                     t_menu_layer_get_layer_cb menu_layer_get_layer,
+                     t_menu_layer_set_callbacks_cb menu_layer_set_callbacks,
+                     t_menu_layer_set_click_config_onto_window_cb menu_layer_set_click_config_onto_window,
+                     t_menu_layer_set_selected_next_cb menu_layer_set_selected_next,
+                     t_menu_layer_set_selected_index_cb menu_layer_set_selected_index,
+                     t_menu_layer_reload_data_cb menu_layer_reload_data,
+                     t_menu_index_compare_cb menu_index_compare,
+                     t_scroll_layer_init_cb scroll_layer_init,
+                     t_scroll_layer_add_child_cb scroll_layer_add_child,
+                     t_scroll_layer_set_click_config_onto_window_cb scroll_layer_set_click_config_onto_window,
+                     t_scroll_layer_set_callbacks_cb scroll_layer_set_callbacks,
+                     t_scroll_layer_set_context_cb scroll_layer_set_context,
+                     t_scroll_layer_set_content_offset_cb scroll_layer_set_content_offset,
+                     t_scroll_layer_get_content_offset_cb scroll_layer_get_content_offset,
+                     t_scroll_layer_set_content_size_cb scroll_layer_set_content_size,
+                     t_scroll_layer_get_content_size_cb scroll_layer_get_content_size,
+                     t_scroll_layer_set_frame_cb scroll_layer_set_frame,
+                     t_scroll_layer_scroll_up_click_handler_cb scroll_layer_scroll_up_click_handler,
+                     t_scroll_layer_scroll_down_click_handler_cb scroll_layer_scroll_down_click_handler,
+                     t_simple_menu_layer_init_cb simple_menu_layer_init,
+                     t_simple_menu_layer_get_layer_cb simple_menu_layer_get_layer,
+                     t_simple_menu_layer_get_selected_index_cb simple_menu_layer_get_selected_index,
+                     t_simple_menu_layer_set_selected_index_cb simple_menu_layer_set_selected_index,
+                     t_window_deinit_cb window_deinit,
+                     t_window_set_click_config_provider_with_context_cb window_set_click_config_provider_with_context,
+                     t_window_get_click_config_provider_cb window_get_click_config_provider,
+                     t_window_set_window_handlers_cb window_set_window_handlers,
+                     t_window_get_root_layer_cb window_get_root_layer,
+                     t_window_get_fullscreen_cb window_get_fullscreen,
+                     t_window_set_status_bar_icon_cb window_set_status_bar_icon,
+                     t_window_is_loaded_cb window_is_loaded,
+                     t_window_stack_pop_cb window_stack_pop,
+                     t_window_stack_pop_all_cb window_stack_pop_all,
+                     t_window_stack_contains_window_cb window_stack_contains_window,
+                     t_window_stack_get_top_window_cb window_stack_get_top_window,
+                     t_window_stack_remove_cb window_stack_remove,
+                     t_property_animation_init_cb property_animation_init,
+                     t_property_animation_update_int16_cb property_animation_update_int16,
+                     t_property_animation_update_gpoint_cb property_animation_update_gpoint,
+                     t_property_animation_update_grect_cb property_animation_update_grect,
+                     t_app_message_register_callbacks_cb app_message_register_callbacks,
+                     t_app_message_deregister_callbacks_cb app_message_deregister_callbacks,
+                     t_app_message_out_get_cb app_message_out_get,
+                     t_app_message_out_send_cb app_message_out_send,
+                     t_app_message_out_release_cb app_message_out_release,
+                     t_app_sync_init_cb app_sync_init,
+                     t_app_sync_deinit_cb app_sync_deinit,
+                     t_app_sync_set_cb app_sync_set,
+                     t_app_sync_get_cb app_sync_get,
+                     t_dict_write_begin_cb dict_write_begin,
+                     t_dict_write_data_cb dict_write_data,
+                     t_dict_write_cstring_cb dict_write_cstring,
+                     t_dict_write_int_cb dict_write_int,
+                     t_dict_write_uint8_cb dict_write_uint8,
+                     t_dict_write_uint16_cb dict_write_uint16,
+                     t_dict_write_uint32_cb dict_write_uint32,
+                     t_dict_write_int8_cb dict_write_int8,
+                     t_dict_write_int16_cb dict_write_int16,
+                     t_dict_write_int32_cb dict_write_int32,
+                     t_dict_write_end_cb dict_write_end,
+                     t_dict_read_begin_from_buffer_cb dict_read_begin_from_buffer,
+                     t_dict_read_next_cb dict_read_next,
+                     t_dict_read_first_cb dict_read_first,
+                     t_dict_serialize_tuplets_cb dict_serialize_tuplets,
+                     t_dict_serialize_tuplets_to_buffer_cb dict_serialize_tuplets_to_buffer,
+                     t_dict_serialize_tuplets_to_buffer_with_iter_cb dict_serialize_tuplets_to_buffer_with_iter,
+                     t_dict_write_tuplet_cb dict_write_tuplet,
+                     t_dict_calc_buffer_size_from_tuplets_cb dict_calc_buffer_size_from_tuplets,
+                     t_dict_merge_cb dict_merge,
+                     t_dict_find_cb dict_find,
+                     t_action_bar_layer_init_cb action_bar_layer_init,
+                     t_action_bar_layer_set_context_cb action_bar_layer_set_context,
+                     t_action_bar_layer_set_click_config_provider_cb action_bar_layer_set_click_config_provider,
+                     t_action_bar_layer_set_icon_cb action_bar_layer_set_icon,
+                     t_action_bar_layer_clear_icon_cb action_bar_layer_clear_icon,
+                     t_action_bar_layer_add_to_window_cb action_bar_layer_add_to_window,
+                     t_action_bar_layer_remove_from_window_cb action_bar_layer_remove_from_window,
+                     t_action_bar_layer_set_background_color_cb action_bar_layer_set_background_color,
+                     t_number_window_init_cb number_window_init,
+                     t_number_window_set_label_cb number_window_set_label,
+                     t_number_window_set_max_cb number_window_set_max,
+                     t_number_window_set_min_cb number_window_set_min,
+                     t_number_window_set_value_cb number_window_set_value,
+                     t_number_window_set_step_size_cb number_window_set_step_size,
+                     t_number_window_get_value_cb number_window_get_value,
+                     t_clock_copy_time_string_cb clock_copy_time_string) {
     animation_init_cb = animation_init;
     animation_set_delay_cb = animation_set_delay;
     animation_set_duration_cb = animation_set_duration;
@@ -195,163 +419,387 @@ void setup_callbacks(t_animation_init_cb animation_init,
     animation_unschedule_cb = animation_unschedule;
     animation_unschedule_all_cb = animation_unschedule_all;
     animation_is_scheduled_cb = animation_is_scheduled;
-    property_animation_init_layer_frame_cb = property_animation_init_layer_frame;
+    app_timer_send_event_cb = app_timer_send_event;
+    app_timer_cancel_event_cb = app_timer_cancel_event;
     app_event_loop_cb = app_event_loop;
     bmp_init_container_cb = bmp_init_container;
     bmp_deinit_container_cb = bmp_deinit_container;
-    graphics_draw_bitmap_in_rect_cb = graphics_draw_bitmap_in_rect;
-    rotbmp_deinit_container_cb = rotbmp_deinit_container;
-    rotbmp_init_container_cb = rotbmp_init_container;
-    rotbmp_pair_deinit_container_cb = rotbmp_pair_deinit_container;
-    rotbmp_pair_init_container_cb = rotbmp_pair_init_container;
-    rotbmp_pair_layer_set_src_ic_cb = rotbmp_pair_layer_set_src_ic;
-    rotbmp_pair_layer_set_angle_cb = rotbmp_pair_layer_set_angle;
-    app_get_current_graphics_context_cb = app_get_current_graphics_context;
+    cos_lookup_cb = cos_lookup;
+    fonts_get_system_font_cb = fonts_get_system_font;
+    fonts_load_custom_font_cb = fonts_load_custom_font;
+    fonts_unload_custom_font_cb = fonts_unload_custom_font;
+    graphics_context_set_stroke_color_cb = graphics_context_set_stroke_color;
+    graphics_context_set_fill_color_cb = graphics_context_set_fill_color;
+    graphics_context_set_text_color_cb = graphics_context_set_text_color;
+    graphics_context_set_compositing_mode_cb = graphics_context_set_compositing_mode;
     graphics_draw_pixel_cb = graphics_draw_pixel;
     graphics_draw_line_cb = graphics_draw_line;
     graphics_fill_rect_cb = graphics_fill_rect;
     graphics_draw_circle_cb = graphics_draw_circle;
     graphics_fill_circle_cb = graphics_fill_circle;
     graphics_draw_round_rect_cb = graphics_draw_round_rect;
+    get_time_cb = get_time;
     gpath_init_cb = gpath_init;
     gpath_move_to_cb = gpath_move_to;
     gpath_rotate_to_cb = gpath_rotate_to;
     gpath_draw_outline_cb = gpath_draw_outline;
     gpath_draw_filled_cb = gpath_draw_filled;
-    graphics_context_set_stroke_color_cb = graphics_context_set_stroke_color;
-    graphics_context_set_fill_color_cb = graphics_context_set_fill_color;
-    graphics_context_set_text_color_cb = graphics_context_set_text_color;
-    graphics_context_set_compositing_mode_cb = graphics_context_set_compositing_mode;
-    graphics_text_draw_cb = graphics_text_draw;
-    light_enable_cb = light_enable;
-    light_enable_interaction_cb = light_enable_interaction;
-    window_set_click_config_provider_cb = window_set_click_config_provider;
-    vibes_double_pulse_cb = vibes_double_pulse;
-    vibes_enqueue_custom_pattern_cb = vibes_enqueue_custom_pattern;
-    vibes_long_pulse_cb = vibes_long_pulse;
-    vibes_short_pulse_cb = vibes_short_pulse;
+    grect_center_point_cb = grect_center_point;
     layer_mark_dirty_cb = layer_mark_dirty;
     layer_remove_from_parent_cb = layer_remove_from_parent;
     layer_add_child_cb = layer_add_child;
     layer_get_frame_cb = layer_get_frame;
     layer_set_frame_cb = layer_set_frame;
-    layer_get_bounds_cb = layer_get_bounds;
-    layer_set_bounds_cb = layer_set_bounds;
     layer_set_hidden_cb = layer_set_hidden;
     layer_init_cb = layer_init;
-    cos_lookup_cb = cos_lookup;
-    sin_lookup_cb = sin_lookup;
-    grect_center_point_cb = grect_center_point;
+    light_enable_cb = light_enable;
+    light_enable_interaction_cb = light_enable_interaction;
+    psleep_cb = psleep;
     resource_init_current_app_cb = resource_init_current_app;
     resource_get_handle_cb = resource_get_handle;
     resource_load_cb = resource_load;
     resource_load_byte_range_cb = resource_load_byte_range;
     resource_size_cb = resource_size;
-    fonts_get_system_font_cb = fonts_get_system_font;
-    fonts_load_custom_font_cb = fonts_load_custom_font;
-    fonts_unload_custom_font_cb = fonts_unload_custom_font;
-    text_layer_init_cb = text_layer_init;
-    text_layer_get_text_cb = text_layer_get_text;
-    text_layer_set_text_cb = text_layer_set_text;
-    text_layer_set_background_color_cb = text_layer_set_background_color;
-    text_layer_set_font_cb = text_layer_set_font;
-    text_layer_set_text_alignment_cb = text_layer_set_text_alignment;
-    text_layer_set_text_color_cb = text_layer_set_text_color;
-    clock_is_24h_style_cb = clock_is_24h_style;
-    get_time_cb = get_time;
-    string_format_time_cb = string_format_time;
-    psleep_cb = psleep;
-    app_timer_send_event_cb = app_timer_send_event;
-    app_timer_cancel_event_cb = app_timer_cancel_event;
+    rotbmp_deinit_container_cb = rotbmp_deinit_container;
+    rotbmp_init_container_cb = rotbmp_init_container;
+    rotbmp_pair_deinit_container_cb = rotbmp_pair_deinit_container;
+    rotbmp_pair_init_container_cb = rotbmp_pair_init_container;
+    rotbmp_pair_layer_set_src_ic_cb = rotbmp_pair_layer_set_src_ic;
+    rotbmp_pair_layer_set_angle_cb = rotbmp_pair_layer_set_angle;
     window_init_cb = window_init;
     window_stack_push_cb = window_stack_push;
+    window_set_click_config_provider_cb = window_set_click_config_provider;
     window_set_background_color_cb = window_set_background_color;
     window_render_cb = window_render;
     window_set_fullscreen_cb = window_set_fullscreen;
+    sin_lookup_cb = sin_lookup;
+    string_format_time_cb = string_format_time;
+    text_layer_init_cb = text_layer_init;
+    text_layer_get_text_cb = text_layer_get_text;
+    text_layer_set_text_cb = text_layer_set_text;
+    text_layer_set_font_cb = text_layer_set_font;
+    text_layer_set_text_color_cb = text_layer_set_text_color;
+    text_layer_set_background_color_cb = text_layer_set_background_color;
+    vibes_double_pulse_cb = vibes_double_pulse;
+    vibes_enqueue_custom_pattern_cb = vibes_enqueue_custom_pattern;
+    vibes_long_pulse_cb = vibes_long_pulse;
+    vibes_short_pulse_cb = vibes_short_pulse;
+    app_get_current_graphics_context_cb = app_get_current_graphics_context;
+    clock_is_24h_style_cb = clock_is_24h_style;
+    property_animation_init_layer_frame_cb = property_animation_init_layer_frame;
+    text_layer_set_text_alignment_cb = text_layer_set_text_alignment;
+    graphics_draw_bitmap_in_rect_cb = graphics_draw_bitmap_in_rect;
+    graphics_text_draw_cb = graphics_text_draw;
+    layer_set_bounds_cb = layer_set_bounds;
+    layer_get_bounds_cb = layer_get_bounds;
+    layer_set_update_proc_cb = layer_set_update_proc;
+    layer_get_window_cb = layer_get_window;
+    layer_remove_child_layers_cb = layer_remove_child_layers;
+    layer_insert_below_sibling_cb = layer_insert_below_sibling;
+    layer_insert_above_sibling_cb = layer_insert_above_sibling;
+    layer_get_hidden_cb = layer_get_hidden;
+    layer_set_clips_cb = layer_set_clips;
+    layer_get_clips_cb = layer_get_clips;
+    text_layer_get_max_used_size_cb = text_layer_get_max_used_size;
+    text_layer_set_size_cb = text_layer_set_size;
+    text_layer_set_overflow_mode_cb = text_layer_set_overflow_mode;
+    graphics_text_layout_get_max_used_size_cb = graphics_text_layout_get_max_used_size;
+    inverter_layer_init_cb = inverter_layer_init;
+    bitmap_layer_init_cb = bitmap_layer_init;
+    bitmap_layer_set_bitmap_cb = bitmap_layer_set_bitmap;
+    bitmap_layer_set_alignment_cb = bitmap_layer_set_alignment;
+    bitmap_layer_set_background_color_cb = bitmap_layer_set_background_color;
+    bitmap_layer_set_compositing_mode_cb = bitmap_layer_set_compositing_mode;
+    heap_bitmap_init_cb = heap_bitmap_init;
+    heap_bitmap_deinit_cb = heap_bitmap_deinit;
+    click_recognizer_get_button_id_cb = click_recognizer_get_button_id;
+    click_number_of_clicks_counted_cb = click_number_of_clicks_counted;
+    menu_cell_basic_draw_cb = menu_cell_basic_draw;
+    menu_cell_title_draw_cb = menu_cell_title_draw;
+    menu_cell_basic_header_draw_cb = menu_cell_basic_header_draw;
+    menu_layer_init_cb = menu_layer_init;
+    menu_layer_get_layer_cb = menu_layer_get_layer;
+    menu_layer_set_callbacks_cb = menu_layer_set_callbacks;
+    menu_layer_set_click_config_onto_window_cb = menu_layer_set_click_config_onto_window;
+    menu_layer_set_selected_next_cb = menu_layer_set_selected_next;
+    menu_layer_set_selected_index_cb = menu_layer_set_selected_index;
+    menu_layer_reload_data_cb = menu_layer_reload_data;
+    menu_index_compare_cb = menu_index_compare;
+    scroll_layer_init_cb = scroll_layer_init;
+    scroll_layer_add_child_cb = scroll_layer_add_child;
+    scroll_layer_set_click_config_onto_window_cb = scroll_layer_set_click_config_onto_window;
+    scroll_layer_set_callbacks_cb = scroll_layer_set_callbacks;
+    scroll_layer_set_context_cb = scroll_layer_set_context;
+    scroll_layer_set_content_offset_cb = scroll_layer_set_content_offset;
+    scroll_layer_get_content_offset_cb = scroll_layer_get_content_offset;
+    scroll_layer_set_content_size_cb = scroll_layer_set_content_size;
+    scroll_layer_get_content_size_cb = scroll_layer_get_content_size;
+    scroll_layer_set_frame_cb = scroll_layer_set_frame;
+    scroll_layer_scroll_up_click_handler_cb = scroll_layer_scroll_up_click_handler;
+    scroll_layer_scroll_down_click_handler_cb = scroll_layer_scroll_down_click_handler;
+    simple_menu_layer_init_cb = simple_menu_layer_init;
+    simple_menu_layer_get_layer_cb = simple_menu_layer_get_layer;
+    simple_menu_layer_get_selected_index_cb = simple_menu_layer_get_selected_index;
+    simple_menu_layer_set_selected_index_cb = simple_menu_layer_set_selected_index;
+    window_deinit_cb = window_deinit;
+    window_set_click_config_provider_with_context_cb = window_set_click_config_provider_with_context;
+    window_get_click_config_provider_cb = window_get_click_config_provider;
+    window_set_window_handlers_cb = window_set_window_handlers;
+    window_get_root_layer_cb = window_get_root_layer;
+    window_get_fullscreen_cb = window_get_fullscreen;
+    window_set_status_bar_icon_cb = window_set_status_bar_icon;
+    window_is_loaded_cb = window_is_loaded;
+    window_stack_pop_cb = window_stack_pop;
+    window_stack_pop_all_cb = window_stack_pop_all;
+    window_stack_contains_window_cb = window_stack_contains_window;
+    window_stack_get_top_window_cb = window_stack_get_top_window;
+    window_stack_remove_cb = window_stack_remove;
+    property_animation_init_cb = property_animation_init;
+    property_animation_update_int16_cb = property_animation_update_int16;
+    property_animation_update_gpoint_cb = property_animation_update_gpoint;
+    property_animation_update_grect_cb = property_animation_update_grect;
+    app_message_register_callbacks_cb = app_message_register_callbacks;
+    app_message_deregister_callbacks_cb = app_message_deregister_callbacks;
+    app_message_out_get_cb = app_message_out_get;
+    app_message_out_send_cb = app_message_out_send;
+    app_message_out_release_cb = app_message_out_release;
+    app_sync_init_cb = app_sync_init;
+    app_sync_deinit_cb = app_sync_deinit;
+    app_sync_set_cb = app_sync_set;
+    app_sync_get_cb = app_sync_get;
+    dict_write_begin_cb = dict_write_begin;
+    dict_write_data_cb = dict_write_data;
+    dict_write_cstring_cb = dict_write_cstring;
+    dict_write_int_cb = dict_write_int;
+    dict_write_uint8_cb = dict_write_uint8;
+    dict_write_uint16_cb = dict_write_uint16;
+    dict_write_uint32_cb = dict_write_uint32;
+    dict_write_int8_cb = dict_write_int8;
+    dict_write_int16_cb = dict_write_int16;
+    dict_write_int32_cb = dict_write_int32;
+    dict_write_end_cb = dict_write_end;
+    dict_read_begin_from_buffer_cb = dict_read_begin_from_buffer;
+    dict_read_next_cb = dict_read_next;
+    dict_read_first_cb = dict_read_first;
+    dict_serialize_tuplets_cb = dict_serialize_tuplets;
+    dict_serialize_tuplets_to_buffer_cb = dict_serialize_tuplets_to_buffer;
+    dict_serialize_tuplets_to_buffer_with_iter_cb = dict_serialize_tuplets_to_buffer_with_iter;
+    dict_write_tuplet_cb = dict_write_tuplet;
+    dict_calc_buffer_size_from_tuplets_cb = dict_calc_buffer_size_from_tuplets;
+    dict_merge_cb = dict_merge;
+    dict_find_cb = dict_find;
+    action_bar_layer_init_cb = action_bar_layer_init;
+    action_bar_layer_set_context_cb = action_bar_layer_set_context;
+    action_bar_layer_set_click_config_provider_cb = action_bar_layer_set_click_config_provider;
+    action_bar_layer_set_icon_cb = action_bar_layer_set_icon;
+    action_bar_layer_clear_icon_cb = action_bar_layer_clear_icon;
+    action_bar_layer_add_to_window_cb = action_bar_layer_add_to_window;
+    action_bar_layer_remove_from_window_cb = action_bar_layer_remove_from_window;
+    action_bar_layer_set_background_color_cb = action_bar_layer_set_background_color;
+    number_window_init_cb = number_window_init;
+    number_window_set_label_cb = number_window_set_label;
+    number_window_set_max_cb = number_window_set_max;
+    number_window_set_min_cb = number_window_set_min;
+    number_window_set_value_cb = number_window_set_value;
+    number_window_set_step_size_cb = number_window_set_step_size;
+    number_window_get_value_cb = number_window_get_value;
+    clock_copy_time_string_cb = clock_copy_time_string;
 }
 
-void animation_init(Animation *animation) { animation_init_cb(animation); }
-void animation_set_delay(Animation *animation, uint32_t delay_ms) { animation_set_delay_cb(animation, delay_ms); }
-void animation_set_duration(Animation *animation, uint32_t duration_ms) { animation_set_duration_cb(animation, duration_ms); }
-void animation_set_curve(Animation *animation, AnimationCurve curve) { animation_set_curve_cb(animation, curve); }
-void animation_set_handlers(Animation *animation, AnimationHandlers callbacks, void *context) { animation_set_handlers_cb(animation, callbacks, context); }
-void animation_set_implementation(Animation *animation, const AnimationImplementation *implementation) { animation_set_implementation_cb(animation, implementation); }
-void *animation_get_context(Animation *animation) { return animation_get_context_cb(animation); }
-void animation_schedule(Animation *animation) { animation_schedule_cb(animation); }
-void animation_unschedule(Animation *animation) { animation_unschedule_cb(animation); }
+void animation_init(struct Animation *animation) { animation_init_cb(animation); }
+void animation_set_delay(struct Animation *animation, uint32_t delay_ms) { animation_set_delay_cb(animation, delay_ms); }
+void animation_set_duration(struct Animation *animation, uint32_t duration_ms) { animation_set_duration_cb(animation, duration_ms); }
+void animation_set_curve(struct Animation *animation, AnimationCurve curve) { animation_set_curve_cb(animation, curve); }
+void animation_set_handlers(struct Animation *animation, AnimationHandlers callbacks, void *context) { animation_set_handlers_cb(animation, callbacks, context); }
+void animation_set_implementation(struct Animation *animation, const AnimationImplementation *implementation) { animation_set_implementation_cb(animation, implementation); }
+void *animation_get_context(struct Animation *animation) { return animation_get_context_cb(animation); }
+void animation_schedule(struct Animation *animation) { animation_schedule_cb(animation); }
+void animation_unschedule(struct Animation *animation) { animation_unschedule_cb(animation); }
 void animation_unschedule_all(void) { animation_unschedule_all_cb(); }
-bool animation_is_scheduled(Animation *animation) { return animation_is_scheduled_cb(animation); }
-void property_animation_init_layer_frame(PropertyAnimation *property_animation, struct Layer *layer, GRect *from_frame, GRect *to_frame) { property_animation_init_layer_frame_cb(property_animation, layer, from_frame, to_frame); }
+bool animation_is_scheduled(struct Animation *animation) { return animation_is_scheduled_cb(animation); }
+AppTimerHandle app_timer_send_event(AppContextRef app_ctx, uint32_t timeout_ms, uint32_t cookie) { return app_timer_send_event_cb(app_ctx, timeout_ms, cookie); }
+bool app_timer_cancel_event(AppContextRef app_ctx_ref, AppTimerHandle handle) { return app_timer_cancel_event_cb(app_ctx_ref, handle); }
 void app_event_loop(AppTaskContextRef app_task_ctx, PebbleAppHandlers *handlers) { app_event_loop_cb(app_task_ctx, handlers); }
 bool bmp_init_container(int resource_id, BmpContainer *c) { return bmp_init_container_cb(resource_id, c); }
 void bmp_deinit_container(BmpContainer *c) { bmp_deinit_container_cb(c); }
-void graphics_draw_bitmap_in_rect(GContext *ctx, const GBitmap *bitmap, GRect rect) { graphics_draw_bitmap_in_rect_cb(ctx, bitmap, rect); }
-void rotbmp_deinit_container(RotBmpContainer *c) { rotbmp_deinit_container_cb(c); }
-bool rotbmp_init_container(int resource_id, RotBmpContainer *c) { return rotbmp_init_container_cb(resource_id, c); }
-void rotbmp_pair_deinit_container(RotBmpPairContainer *c) { rotbmp_pair_deinit_container_cb(c); }
-bool rotbmp_pair_init_container(int white_resource_id, int black_resource_id, RotBmpPairContainer *c) { return rotbmp_pair_init_container_cb(white_resource_id, black_resource_id, c); }
-void rotbmp_pair_layer_set_src_ic(RotBmpPairLayer *pair, GPoint ic) { rotbmp_pair_layer_set_src_ic_cb(pair, ic); }
-void rotbmp_pair_layer_set_angle(RotBmpPairLayer *pair, int32_t angle) { rotbmp_pair_layer_set_angle_cb(pair, angle); }
-GContext *app_get_current_graphics_context(void) { return app_get_current_graphics_context_cb(); }
+int32_t cos_lookup(int32_t angle) { return cos_lookup_cb(angle); }
+GFont fonts_get_system_font(const char *font_key) { return fonts_get_system_font_cb(font_key); }
+GFont fonts_load_custom_font(ResHandle resource) { return fonts_load_custom_font_cb(resource); }
+void fonts_unload_custom_font(GFont font) { fonts_unload_custom_font_cb(font); }
+void graphics_context_set_stroke_color(GContext *ctx, GColor color) { graphics_context_set_stroke_color_cb(ctx, color); }
+void graphics_context_set_fill_color(GContext *ctx, GColor color) { graphics_context_set_fill_color_cb(ctx, color); }
+void graphics_context_set_text_color(GContext *ctx, GColor color) { graphics_context_set_text_color_cb(ctx, color); }
+void graphics_context_set_compositing_mode(GContext *ctx, GCompOp mode) { graphics_context_set_compositing_mode_cb(ctx, mode); }
 void graphics_draw_pixel(GContext *ctx, GPoint point) { graphics_draw_pixel_cb(ctx, point); }
 void graphics_draw_line(GContext *ctx, GPoint p0, GPoint p1) { graphics_draw_line_cb(ctx, p0, p1); }
 void graphics_fill_rect(GContext *ctx, GRect rect, uint8_t corner_radius, GCornerMask corner_mask) { graphics_fill_rect_cb(ctx, rect, corner_radius, corner_mask); }
 void graphics_draw_circle(GContext *ctx, GPoint p, int radius) { graphics_draw_circle_cb(ctx, p, radius); }
 void graphics_fill_circle(GContext *ctx, GPoint p, int radius) { graphics_fill_circle_cb(ctx, p, radius); }
 void graphics_draw_round_rect(GContext *ctx, GRect rect, int radius) { graphics_draw_round_rect_cb(ctx, rect, radius); }
+void get_time(PblTm *time) { get_time_cb(time); }
 void gpath_init(GPath *path, const GPathInfo *init) { gpath_init_cb(path, init); }
 void gpath_move_to(GPath *path, GPoint point) { gpath_move_to_cb(path, point); }
 void gpath_rotate_to(GPath *path, int32_t angle) { gpath_rotate_to_cb(path, angle); }
 void gpath_draw_outline(GContext *ctx, GPath *path) { gpath_draw_outline_cb(ctx, path); }
 void gpath_draw_filled(GContext *ctx, GPath *path) { gpath_draw_filled_cb(ctx, path); }
-void graphics_context_set_stroke_color(GContext *ctx, GColor color) { graphics_context_set_stroke_color_cb(ctx, color); }
-void graphics_context_set_fill_color(GContext *ctx, GColor color) { graphics_context_set_fill_color_cb(ctx, color); }
-void graphics_context_set_text_color(GContext *ctx, GColor color) { graphics_context_set_text_color_cb(ctx, color); }
-void graphics_context_set_compositing_mode(GContext *ctx, GCompOp mode) { graphics_context_set_compositing_mode_cb(ctx, mode); }
-void graphics_text_draw(GContext *ctx, const char *text, const GFont font, const GRect box, const GTextOverflowMode overflow_mode, const GTextAlignment alignment, const GTextLayoutCacheRef layout) { graphics_text_draw_cb(ctx, text, font, box, overflow_mode, alignment, layout); }
-void light_enable(bool enable) { light_enable_cb(enable); }
-void light_enable_interaction(void) { light_enable_interaction_cb(); }
-void window_set_click_config_provider(Window *window, ClickConfigProvider click_config_provider) { window_set_click_config_provider_cb(window, click_config_provider); }
-void vibes_double_pulse(void) { vibes_double_pulse_cb(); }
-void vibes_enqueue_custom_pattern(VibePattern pattern) { vibes_enqueue_custom_pattern_cb(pattern); }
-void vibes_long_pulse(void) { vibes_long_pulse_cb(); }
-void vibes_short_pulse(void) { vibes_short_pulse_cb(); }
+GPoint grect_center_point(GRect *rect) { return grect_center_point_cb(rect); }
 void layer_mark_dirty(Layer *layer) { layer_mark_dirty_cb(layer); }
 void layer_remove_from_parent(Layer *child) { layer_remove_from_parent_cb(child); }
 void layer_add_child(Layer *parent, Layer *child) { layer_add_child_cb(parent, child); }
 GRect layer_get_frame(Layer *layer) { return layer_get_frame_cb(layer); }
 void layer_set_frame(Layer *layer, GRect frame) { layer_set_frame_cb(layer, frame); }
-GRect layer_get_bounds(Layer *layer) { return layer_get_bounds_cb(layer); }
-void layer_set_bounds(Layer *layer, GRect frame) { layer_set_bounds_cb(layer, frame); }
 void layer_set_hidden(Layer *layer, bool hidden) { layer_set_hidden_cb(layer, hidden); }
 void layer_init(Layer *layer, GRect frame) { layer_init_cb(layer, frame); }
-int32_t cos_lookup(int32_t angle) { return cos_lookup_cb(angle); }
-int32_t sin_lookup(int32_t angle) { return sin_lookup_cb(angle); }
-GPoint grect_center_point(GRect *rect) { return grect_center_point_cb(rect); }
+void light_enable(bool enable) { light_enable_cb(enable); }
+void light_enable_interaction(void) { light_enable_interaction_cb(); }
+void psleep(int millis) { psleep_cb(millis); }
 void resource_init_current_app(ResVersionHandle version) { resource_init_current_app_cb(version); }
 ResHandle resource_get_handle(uint32_t file_id) { return resource_get_handle_cb(file_id); }
 size_t resource_load(ResHandle h, uint8_t *buffer, size_t max_length) { return resource_load_cb(h, buffer, max_length); }
 size_t resource_load_byte_range(ResHandle h, uint32_t start_bytes, uint8_t *data, size_t num_bytes) { return resource_load_byte_range_cb(h, start_bytes, data, num_bytes); }
 size_t resource_size(ResHandle h) { return resource_size_cb(h); }
-GFont fonts_get_system_font(const char *font_key) { return fonts_get_system_font_cb(font_key); }
-GFont fonts_load_custom_font(ResHandle resource) { return fonts_load_custom_font_cb(resource); }
-void fonts_unload_custom_font(GFont font) { fonts_unload_custom_font_cb(font); }
-void text_layer_init(TextLayer *text_layer, GRect frame) { text_layer_init_cb(text_layer, frame); }
-const char *text_layer_get_text(TextLayer *text_layer) { return text_layer_get_text_cb(text_layer); }
-void text_layer_set_text(TextLayer *text_layer, const char *text) { text_layer_set_text_cb(text_layer, text); }
-void text_layer_set_background_color(TextLayer *text_layer, GColor color) { text_layer_set_background_color_cb(text_layer, color); }
-void text_layer_set_font(TextLayer *text_layer, GFont font) { text_layer_set_font_cb(text_layer, font); }
-void text_layer_set_text_alignment(TextLayer *text_layer, GTextAlignment text_alignment) { text_layer_set_text_alignment_cb(text_layer, text_alignment); }
-void text_layer_set_text_color(TextLayer *text_layer, GColor color) { text_layer_set_text_color_cb(text_layer, color); }
-bool clock_is_24h_style(void) { return clock_is_24h_style_cb(); }
-void get_time(PblTm *time) { get_time_cb(time); }
-void string_format_time(char *ptr, size_t maxsize, const char *format, const PblTm *timeptr) { string_format_time_cb(ptr, maxsize, format, timeptr); }
-void psleep(int millis) { psleep_cb(millis); }
-AppTimerHandle app_timer_send_event(AppContextRef app_ctx, uint32_t timeout_ms, uint32_t cookie) { return app_timer_send_event_cb(app_ctx, timeout_ms, cookie); }
-bool app_timer_cancel_event(AppContextRef app_ctx_ref, AppTimerHandle handle) { return app_timer_cancel_event_cb(app_ctx_ref, handle); }
+void rotbmp_deinit_container(RotBmpContainer *c) { rotbmp_deinit_container_cb(c); }
+bool rotbmp_init_container(int resource_id, RotBmpContainer *c) { return rotbmp_init_container_cb(resource_id, c); }
+void rotbmp_pair_deinit_container(RotBmpPairContainer *c) { rotbmp_pair_deinit_container_cb(c); }
+bool rotbmp_pair_init_container(int white_resource_id, int black_resource_id, RotBmpPairContainer *c) { return rotbmp_pair_init_container_cb(white_resource_id, black_resource_id, c); }
+void rotbmp_pair_layer_set_src_ic(RotBmpPairLayer *pair, GPoint ic) { rotbmp_pair_layer_set_src_ic_cb(pair, ic); }
+void rotbmp_pair_layer_set_angle(RotBmpPairLayer *pair, int32_t angle) { rotbmp_pair_layer_set_angle_cb(pair, angle); }
 void window_init(Window *window, const char *debug_name) { window_init_cb(window, debug_name); }
 void window_stack_push(Window *window, bool animated) { window_stack_push_cb(window, animated); }
+void window_set_click_config_provider(Window *window, ClickConfigProvider click_config_provider) { window_set_click_config_provider_cb(window, click_config_provider); }
 void window_set_background_color(Window *window, GColor background_color) { window_set_background_color_cb(window, background_color); }
 void window_render(Window *window, GContext *ctx) { window_render_cb(window, ctx); }
 void window_set_fullscreen(Window *window, bool enabled) { window_set_fullscreen_cb(window, enabled); }
+int32_t sin_lookup(int32_t angle) { return sin_lookup_cb(angle); }
+void string_format_time(char *ptr, size_t maxsize, const char *format, const PblTm *timeptr) { string_format_time_cb(ptr, maxsize, format, timeptr); }
+void text_layer_init(TextLayer *text_layer, GRect frame) { text_layer_init_cb(text_layer, frame); }
+const char *text_layer_get_text(TextLayer *text_layer) { return text_layer_get_text_cb(text_layer); }
+void text_layer_set_text(TextLayer *text_layer, const char *text) { text_layer_set_text_cb(text_layer, text); }
+void text_layer_set_font(TextLayer *text_layer, GFont font) { text_layer_set_font_cb(text_layer, font); }
+void text_layer_set_text_color(TextLayer *text_layer, GColor color) { text_layer_set_text_color_cb(text_layer, color); }
+void text_layer_set_background_color(TextLayer *text_layer, GColor color) { text_layer_set_background_color_cb(text_layer, color); }
+void vibes_double_pulse(void) { vibes_double_pulse_cb(); }
+void vibes_enqueue_custom_pattern(VibePattern pattern) { vibes_enqueue_custom_pattern_cb(pattern); }
+void vibes_long_pulse(void) { vibes_long_pulse_cb(); }
+void vibes_short_pulse(void) { vibes_short_pulse_cb(); }
+GContext *app_get_current_graphics_context(void) { return app_get_current_graphics_context_cb(); }
+bool clock_is_24h_style(void) { return clock_is_24h_style_cb(); }
+void property_animation_init_layer_frame(struct PropertyAnimation *property_animation, struct Layer *layer, GRect *from_frame, GRect *to_frame) { property_animation_init_layer_frame_cb(property_animation, layer, from_frame, to_frame); }
+void text_layer_set_text_alignment(TextLayer *text_layer, GTextAlignment text_alignment) { text_layer_set_text_alignment_cb(text_layer, text_alignment); }
+void graphics_draw_bitmap_in_rect(GContext *ctx, const GBitmap *bitmap, GRect rect) { graphics_draw_bitmap_in_rect_cb(ctx, bitmap, rect); }
+void graphics_text_draw(GContext *ctx, const char *text, const GFont font, const GRect box, const GTextOverflowMode overflow_mode, const GTextAlignment alignment, const GTextLayoutCacheRef layout) { graphics_text_draw_cb(ctx, text, font, box, overflow_mode, alignment, layout); }
+void layer_set_bounds(Layer *layer, GRect bounds) { layer_set_bounds_cb(layer, bounds); }
+GRect layer_get_bounds(Layer *layer) { return layer_get_bounds_cb(layer); }
+void layer_set_update_proc(Layer *layer, LayerUpdateProc update_proc) { layer_set_update_proc_cb(layer, update_proc); }
+struct Window *layer_get_window(Layer *layer) { return layer_get_window_cb(layer); }
+void layer_remove_child_layers(Layer *parent) { layer_remove_child_layers_cb(parent); }
+void layer_insert_below_sibling(Layer *layer_to_insert, Layer *below_sibling_layer) { layer_insert_below_sibling_cb(layer_to_insert, below_sibling_layer); }
+void layer_insert_above_sibling(Layer *layer_to_insert, Layer *above_sibling_layer) { layer_insert_above_sibling_cb(layer_to_insert, above_sibling_layer); }
+bool layer_get_hidden(Layer *layer) { return layer_get_hidden_cb(layer); }
+void layer_set_clips(Layer *layer, bool clips) { layer_set_clips_cb(layer, clips); }
+bool layer_get_clips(Layer *layer) { return layer_get_clips_cb(layer); }
+GSize text_layer_get_max_used_size(GContext *ctx, TextLayer *text_layer) { return text_layer_get_max_used_size_cb(ctx, text_layer); }
+void text_layer_set_size(TextLayer *text_layer, const GSize max_size) { text_layer_set_size_cb(text_layer, max_size); }
+void text_layer_set_overflow_mode(TextLayer *text_layer, GTextOverflowMode line_mode) { text_layer_set_overflow_mode_cb(text_layer, line_mode); }
+GSize graphics_text_layout_get_max_used_size(GContext *ctx, const char *text, const GFont font, const GRect box, const GTextOverflowMode overflow_mode, const GTextAlignment alignment, GTextLayoutCacheRef layout) { return graphics_text_layout_get_max_used_size_cb(ctx, text, font, box, overflow_mode, alignment, layout); }
+void inverter_layer_init(InverterLayer *inverter, GRect frame) { inverter_layer_init_cb(inverter, frame); }
+void bitmap_layer_init(BitmapLayer *image, GRect frame) { bitmap_layer_init_cb(image, frame); }
+void bitmap_layer_set_bitmap(BitmapLayer *image, const GBitmap *bitmap) { bitmap_layer_set_bitmap_cb(image, bitmap); }
+void bitmap_layer_set_alignment(BitmapLayer *image, GAlign alignment) { bitmap_layer_set_alignment_cb(image, alignment); }
+void bitmap_layer_set_background_color(BitmapLayer *image, GColor color) { bitmap_layer_set_background_color_cb(image, color); }
+void bitmap_layer_set_compositing_mode(BitmapLayer *image, GCompOp mode) { bitmap_layer_set_compositing_mode_cb(image, mode); }
+bool heap_bitmap_init(HeapBitmap *hb, int resource_id) { return heap_bitmap_init_cb(hb, resource_id); }
+void heap_bitmap_deinit(HeapBitmap *hb) { heap_bitmap_deinit_cb(hb); }
+ButtonId click_recognizer_get_button_id(ClickRecognizerRef recognizer) { return click_recognizer_get_button_id_cb(recognizer); }
+uint8_t click_number_of_clicks_counted(ClickRecognizerRef recognizer) { return click_number_of_clicks_counted_cb(recognizer); }
+void menu_cell_basic_draw(GContext *ctx, Layer *cell_layer, const char *title, const char *subtitle, GBitmap *icon) { menu_cell_basic_draw_cb(ctx, cell_layer, title, subtitle, icon); }
+void menu_cell_title_draw(GContext *ctx, Layer *cell_layer, const char *title) { menu_cell_title_draw_cb(ctx, cell_layer, title); }
+void menu_cell_basic_header_draw(GContext *ctx, Layer *cell_layer, const char *title) { menu_cell_basic_header_draw_cb(ctx, cell_layer, title); }
+void menu_layer_init(MenuLayer *menu_layer, GRect frame) { menu_layer_init_cb(menu_layer, frame); }
+Layer *menu_layer_get_layer(MenuLayer *menu_layer) { return menu_layer_get_layer_cb(menu_layer); }
+void menu_layer_set_callbacks(MenuLayer *menu_layer, void *callback_context, MenuLayerCallbacks callbacks) { menu_layer_set_callbacks_cb(menu_layer, callback_context, callbacks); }
+void menu_layer_set_click_config_onto_window(MenuLayer *menu_layer, struct Window *window) { menu_layer_set_click_config_onto_window_cb(menu_layer, window); }
+void menu_layer_set_selected_next(MenuLayer *menu_layer, bool up, MenuRowAlign scroll_align, bool animated) { menu_layer_set_selected_next_cb(menu_layer, up, scroll_align, animated); }
+void menu_layer_set_selected_index(MenuLayer *menu_layer, MenuIndex index, MenuRowAlign scroll_align, bool animated) { menu_layer_set_selected_index_cb(menu_layer, index, scroll_align, animated); }
+void menu_layer_reload_data(MenuLayer *menu_layer) { menu_layer_reload_data_cb(menu_layer); }
+int16_t menu_index_compare(MenuIndex *a, MenuIndex *b) { return menu_index_compare_cb(a, b); }
+void scroll_layer_init(ScrollLayer *scroll_layer, GRect frame) { scroll_layer_init_cb(scroll_layer, frame); }
+void scroll_layer_add_child(ScrollLayer *scroll_layer, Layer *child) { scroll_layer_add_child_cb(scroll_layer, child); }
+void scroll_layer_set_click_config_onto_window(ScrollLayer *scroll_layer, struct Window *window) { scroll_layer_set_click_config_onto_window_cb(scroll_layer, window); }
+void scroll_layer_set_callbacks(ScrollLayer *scroll_layer, ScrollLayerCallbacks callbacks) { scroll_layer_set_callbacks_cb(scroll_layer, callbacks); }
+void scroll_layer_set_context(ScrollLayer *scroll_layer, void *context) { scroll_layer_set_context_cb(scroll_layer, context); }
+void scroll_layer_set_content_offset(ScrollLayer *scroll_layer, GPoint offset, bool animated) { scroll_layer_set_content_offset_cb(scroll_layer, offset, animated); }
+GPoint scroll_layer_get_content_offset(ScrollLayer *scroll_layer) { return scroll_layer_get_content_offset_cb(scroll_layer); }
+void scroll_layer_set_content_size(ScrollLayer *scroll_layer, GSize size) { scroll_layer_set_content_size_cb(scroll_layer, size); }
+GSize scroll_layer_get_content_size(ScrollLayer *scroll_layer) { return scroll_layer_get_content_size_cb(scroll_layer); }
+void scroll_layer_set_frame(ScrollLayer *scroll_layer, GRect rect) { scroll_layer_set_frame_cb(scroll_layer, rect); }
+void scroll_layer_scroll_up_click_handler(ClickRecognizerRef recognizer, ScrollLayer *scroll_layer) { scroll_layer_scroll_up_click_handler_cb(recognizer, scroll_layer); }
+void scroll_layer_scroll_down_click_handler(ClickRecognizerRef recognizer, ScrollLayer *scroll_layer) { scroll_layer_scroll_down_click_handler_cb(recognizer, scroll_layer); }
+void simple_menu_layer_init(SimpleMenuLayer *simple_menu, GRect frame, Window *window, const SimpleMenuSection *sections, int num_sections, void *callback_context) { simple_menu_layer_init_cb(simple_menu, frame, window, sections, num_sections, callback_context); }
+Layer *simple_menu_layer_get_layer(SimpleMenuLayer *simple_menu) { return simple_menu_layer_get_layer_cb(simple_menu); }
+int simple_menu_layer_get_selected_index(SimpleMenuLayer *simple_menu) { return simple_menu_layer_get_selected_index_cb(simple_menu); }
+void simple_menu_layer_set_selected_index(SimpleMenuLayer *simple_menu, int index, bool animated) { simple_menu_layer_set_selected_index_cb(simple_menu, index, animated); }
+void window_deinit(Window *window) { window_deinit_cb(window); }
+void window_set_click_config_provider_with_context(Window *window, ClickConfigProvider click_config_provider, void *context) { window_set_click_config_provider_with_context_cb(window, click_config_provider, context); }
+ClickConfigProvider window_get_click_config_provider(Window *window) { return window_get_click_config_provider_cb(window); }
+void window_set_window_handlers(Window *window, WindowHandlers handlers) { window_set_window_handlers_cb(window, handlers); }
+struct Layer *window_get_root_layer(Window *window) { return window_get_root_layer_cb(window); }
+bool window_get_fullscreen(Window *window) { return window_get_fullscreen_cb(window); }
+void window_set_status_bar_icon(Window *window, const GBitmap *icon) { window_set_status_bar_icon_cb(window, icon); }
+bool window_is_loaded(Window *window) { return window_is_loaded_cb(window); }
+Window *window_stack_pop(bool animated) { return window_stack_pop_cb(animated); }
+void window_stack_pop_all(const bool animated) { window_stack_pop_all_cb(animated); }
+bool window_stack_contains_window(Window *window) { return window_stack_contains_window_cb(window); }
+Window *window_stack_get_top_window(void) { return window_stack_get_top_window_cb(); }
+Window *window_stack_remove(Window *window, bool animated) { return window_stack_remove_cb(window, animated); }
+void property_animation_init(struct PropertyAnimation *property_animation, const struct PropertyAnimationImplementation *implementation, void *subject, void *from_value, void *to_value) { property_animation_init_cb(property_animation, implementation, subject, from_value, to_value); }
+void property_animation_update_int16(struct PropertyAnimation *property_animation, const uint32_t time_normalized) { property_animation_update_int16_cb(property_animation, time_normalized); }
+void property_animation_update_gpoint(struct PropertyAnimation *property_animation, const uint32_t time_normalized) { property_animation_update_gpoint_cb(property_animation, time_normalized); }
+void property_animation_update_grect(struct PropertyAnimation *property_animation, const uint32_t time_normalized) { property_animation_update_grect_cb(property_animation, time_normalized); }
+AppMessageResult app_message_register_callbacks(AppMessageCallbacksNode *callbacks_node) { return app_message_register_callbacks_cb(callbacks_node); }
+AppMessageResult app_message_deregister_callbacks(AppMessageCallbacksNode *callbacks_node) { return app_message_deregister_callbacks_cb(callbacks_node); }
+AppMessageResult app_message_out_get(DictionaryIterator **iter_out) { return app_message_out_get_cb(iter_out); }
+AppMessageResult app_message_out_send(void) { return app_message_out_send_cb(); }
+AppMessageResult app_message_out_release(void) { return app_message_out_release_cb(); }
+void app_sync_init(AppSync *s, uint8_t *buffer, const uint16_t buffer_size, const Tuplet * const keys_and_initial_values, const uint8_t count, AppSyncTupleChangedCallback tuple_changed_callback, AppSyncErrorCallback error_callback, void *context) { app_sync_init_cb(s, buffer, buffer_size, keys_and_initial_values, count, tuple_changed_callback, error_callback, context); }
+void app_sync_deinit(AppSync *s) { app_sync_deinit_cb(s); }
+AppMessageResult app_sync_set(AppSync *s, const Tuplet * const keys_and_values_to_update, const uint8_t count) { return app_sync_set_cb(s, keys_and_values_to_update, count); }
+const Tuple *app_sync_get(const AppSync *s, const uint32_t key) { return app_sync_get_cb(s, key); }
+DictionaryResult dict_write_begin(DictionaryIterator *iter, uint8_t * const buffer, const uint16_t size) { return dict_write_begin_cb(iter, buffer, size); }
+DictionaryResult dict_write_data(DictionaryIterator *iter, const uint32_t key, const uint8_t * const data, const uint16_t size) { return dict_write_data_cb(iter, key, data, size); }
+DictionaryResult dict_write_cstring(DictionaryIterator *iter, const uint32_t key, const char * const cstring) { return dict_write_cstring_cb(iter, key, cstring); }
+DictionaryResult dict_write_int(DictionaryIterator *iter, const uint32_t key, const void *integer, const uint8_t width_bytes, const bool is_signed) { return dict_write_int_cb(iter, key, integer, width_bytes, is_signed); }
+DictionaryResult dict_write_uint8(DictionaryIterator *iter, const uint32_t key, const uint8_t value) { return dict_write_uint8_cb(iter, key, value); }
+DictionaryResult dict_write_uint16(DictionaryIterator *iter, const uint32_t key, const uint16_t value) { return dict_write_uint16_cb(iter, key, value); }
+DictionaryResult dict_write_uint32(DictionaryIterator *iter, const uint32_t key, const uint32_t value) { return dict_write_uint32_cb(iter, key, value); }
+DictionaryResult dict_write_int8(DictionaryIterator *iter, const uint32_t key, const int8_t value) { return dict_write_int8_cb(iter, key, value); }
+DictionaryResult dict_write_int16(DictionaryIterator *iter, const uint32_t key, const int16_t value) { return dict_write_int16_cb(iter, key, value); }
+DictionaryResult dict_write_int32(DictionaryIterator *iter, const uint32_t key, const int32_t value) { return dict_write_int32_cb(iter, key, value); }
+uint32_t dict_write_end(DictionaryIterator *iter) { return dict_write_end_cb(iter); }
+Tuple *dict_read_begin_from_buffer(DictionaryIterator *iter, const uint8_t * const buffer, const uint16_t size) { return dict_read_begin_from_buffer_cb(iter, buffer, size); }
+Tuple *dict_read_next(DictionaryIterator *iter) { return dict_read_next_cb(iter); }
+Tuple *dict_read_first(DictionaryIterator *iter) { return dict_read_first_cb(iter); }
+DictionaryResult dict_serialize_tuplets(DictionarySerializeCallback callback, void *context, const uint8_t tuplets_count, const Tuplet * const tuplets) { return dict_serialize_tuplets_cb(callback, context, tuplets_count, tuplets); }
+DictionaryResult dict_serialize_tuplets_to_buffer(const uint8_t tuplets_count, const Tuplet * const tuplets, uint8_t *buffer, uint32_t *size_in_out) { return dict_serialize_tuplets_to_buffer_cb(tuplets_count, tuplets, buffer, size_in_out); }
+DictionaryResult dict_serialize_tuplets_to_buffer_with_iter(const uint8_t tuplets_count, const Tuplet * const tuplets, DictionaryIterator *iter, uint8_t *buffer, uint32_t *size_in_out) { return dict_serialize_tuplets_to_buffer_with_iter_cb(tuplets_count, tuplets, iter, buffer, size_in_out); }
+DictionaryResult dict_write_tuplet(DictionaryIterator *iter, const Tuplet * const tuplet) { return dict_write_tuplet_cb(iter, tuplet); }
+uint32_t dict_calc_buffer_size_from_tuplets(const uint8_t tuplets_count, const Tuplet * const tuplets) { return dict_calc_buffer_size_from_tuplets_cb(tuplets_count, tuplets); }
+DictionaryResult dict_merge(DictionaryIterator *dest, uint32_t *dest_max_size_in_out, DictionaryIterator *source, const bool update_existing_keys_only, const DictionaryKeyUpdatedCallback key_callback, void *context) { return dict_merge_cb(dest, dest_max_size_in_out, source, update_existing_keys_only, key_callback, context); }
+Tuple *dict_find(const DictionaryIterator *iter, const uint32_t key) { return dict_find_cb(iter, key); }
+void action_bar_layer_init(ActionBarLayer *action_bar) { action_bar_layer_init_cb(action_bar); }
+void action_bar_layer_set_context(ActionBarLayer *action_bar, void *context) { action_bar_layer_set_context_cb(action_bar, context); }
+void action_bar_layer_set_click_config_provider(ActionBarLayer *action_bar, ClickConfigProvider click_config_provider) { action_bar_layer_set_click_config_provider_cb(action_bar, click_config_provider); }
+void action_bar_layer_set_icon(ActionBarLayer *action_bar, ButtonId button_id, const GBitmap *icon) { action_bar_layer_set_icon_cb(action_bar, button_id, icon); }
+void action_bar_layer_clear_icon(ActionBarLayer *action_bar, ButtonId button_id) { action_bar_layer_clear_icon_cb(action_bar, button_id); }
+void action_bar_layer_add_to_window(ActionBarLayer *action_bar, struct Window *window) { action_bar_layer_add_to_window_cb(action_bar, window); }
+void action_bar_layer_remove_from_window(ActionBarLayer *action_bar) { action_bar_layer_remove_from_window_cb(action_bar); }
+void action_bar_layer_set_background_color(ActionBarLayer *action_bar, GColor background_color) { action_bar_layer_set_background_color_cb(action_bar, background_color); }
+void number_window_init(NumberWindow *numberwindow, const char *label, NumberWindowCallbacks callbacks, void *callback_context) { number_window_init_cb(numberwindow, label, callbacks, callback_context); }
+void number_window_set_label(NumberWindow *nw, const char *label) { number_window_set_label_cb(nw, label); }
+void number_window_set_max(NumberWindow *numberwindow, int max) { number_window_set_max_cb(numberwindow, max); }
+void number_window_set_min(NumberWindow *numberwindow, int min) { number_window_set_min_cb(numberwindow, min); }
+void number_window_set_value(NumberWindow *numberwindow, int value) { number_window_set_value_cb(numberwindow, value); }
+void number_window_set_step_size(NumberWindow *numberwindow, int step) { number_window_set_step_size_cb(numberwindow, step); }
+int number_window_get_value(NumberWindow *numberwindow) { return number_window_get_value_cb(numberwindow); }
+void clock_copy_time_string(char *buffer, uint8_t size) { clock_copy_time_string_cb(buffer, size); }
 

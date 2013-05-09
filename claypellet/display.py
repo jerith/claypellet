@@ -9,7 +9,7 @@ import pygame.display
 import pygame.time
 import pygame.image
 from pygame.locals import SWSURFACE, QUIT, KEYDOWN, BLEND_MIN
-from pygame.locals import K_ESCAPE, K_q, K_s
+from pygame.locals import K_ESCAPE, K_q, K_r, K_s
 
 
 class PebbleDisplay(object):
@@ -34,6 +34,9 @@ class PebbleDisplay(object):
                 elif ev.type == KEYDOWN:
                     if ev.key in (K_q, K_ESCAPE):
                         return
+                    elif ev.key == K_r:
+                        self.harness.load_app(unload=True)
+                        self.harness.call_main()
                     elif ev.key == K_s:
                         self.screenshot()
             should_render = self.harness.tick()

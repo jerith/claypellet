@@ -3,7 +3,6 @@
  * by `FFI.cdef()'.
  ****************************************************************************/
 
-
 struct Layer;
 struct AccelData;
 struct Animation;
