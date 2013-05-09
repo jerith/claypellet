@@ -603,7 +603,7 @@ void call_setup_callbacks(t_animation_init_cb animation_init,
 
 void call_main(void);
 void deinit_claypellet(void);
-void init_claypellet(char *path);
+int init_claypellet(char *path);
 
 struct ClayResourceHandle {
     uint32_t file_id;

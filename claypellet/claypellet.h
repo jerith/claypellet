@@ -207,7 +207,7 @@ typedef void (*t_clock_copy_time_string_cb)(char *buffer, uint8_t size);
 
 void call_main(void);
 void deinit_claypellet(void);
-void init_claypellet(char *path);
+int init_claypellet(char *path);
 
 struct ClayResourceHandle {
     uint32_t file_id;

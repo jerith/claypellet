@@ -32,26 +32,28 @@ void deinit_claypellet(void) {
 // Include our huge generated call_setup_callbacks() function.
 #include "claypellet_harness_gen.c"
 
-void init_claypellet(char *path) {
+int init_claypellet(char *path) {
     void *func;
 
     app_lib = dlopen(path, RTLD_NOW);
     if (app_lib == NULL) {
-        printf("Can't open library.\n");
-        return;
+        printf("Can't open library: %s\n", dlerror());
+        return -1;
     }
 
     func = dlsym(app_lib, "pbl_main");
     if (func == NULL) {
-        printf("Can't load pbl_main.\n");
-    } else {
-        pbl_main_func = (pbl_main_t)func;
+        printf("Can't load pbl_main: %s\n", dlerror());
+        return -1;
     }
+    pbl_main_func = (pbl_main_t)func;
 
     func = dlsym(app_lib, "setup_callbacks");
     if (func == NULL) {
-        printf("Can't load setup_callbacks.\n");
-    } else {
-        setup_callbacks_func = (setup_callbacks_t)func;
+        printf("Can't load setup_callbacks: %s\n", dlerror());
+        return -1;
     }
+    setup_callbacks_func = (setup_callbacks_t)func;
+
+    return 0;
 }

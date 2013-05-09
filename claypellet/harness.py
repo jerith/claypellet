@@ -39,7 +39,8 @@ class PebbleHarness(PebbleHarnessBase):
             self.lib.deinit_claypellet()
 
         print "Loading app..."
-        self.lib.init_claypellet(self.app_lib)
+        if self.lib.init_claypellet(self.app_lib) != 0:
+            raise Exception("Can't load app.")
         self.lib.call_setup_callbacks(*self._callbacks)
         print "App loaded."
         self.windows = {}
