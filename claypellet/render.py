@@ -34,11 +34,6 @@ class PebbleGraphicsContext(object):
             self._flattened = True
         return self.image
 
-    def get_rfont(self, font):
-        if font not in self._display.fonts:
-            self._display.fonts[font] = PebbleRenderFont(font)
-        return self._display.fonts[font]
-
     def get_child_context(self, frame):
         child = PebbleGraphicsContext(self._display,
                                       (frame.size.w, frame.size.h))
@@ -164,47 +159,9 @@ class PebbleGraphicsContext(object):
         # TODO: overflow, layout(?)
         text_box = ((box.origin.x, box.origin.y),
                     (box.origin.x + box.size.w, box.origin.y + box.size.h))
-        rfont = self.get_rfont(font)
 
         for i, line in enumerate(text.splitlines()):
             line_box = (
-                (text_box[0][0], text_box[0][1] + i * rfont.max_height),
+                (text_box[0][0], text_box[0][1] + i * font.max_height),
                 text_box[1])
-            self._draw_text_line(line, rfont, line_box, alignment)
-
-
-class PebbleRenderFont(object):
-    def __init__(self, font):
-        self._font = font
-        self.glyphs = {}
-        self.max_height = font.fontinfo['max_height']
-
-    def get_glyph(self, ch):
-        if ch not in self.glyphs:
-            codepoint = ord(ch)
-            glyph_data = self._font.get_glyph(codepoint)
-            self.glyphs[ch] = PebbleRenderGlyph(codepoint, glyph_data)
-        return self.glyphs[ch]
-
-
-class PebbleRenderGlyph(object):
-    def __init__(self, codepoint, glyph_data):
-        self.codepoint = codepoint
-        self._glyph_data = glyph_data
-        self.advance = glyph_data['advance']
-        self._offset = (glyph_data['offset_left'], glyph_data['offset_top'])
-        self._size = (glyph_data['width'], glyph_data['height'])
-        self.box = (self._offset, pmap(operator.add, self._offset, self._size))
-
-        if self._size[0] * self._size[1] == 0:
-            # Special-case for empty glyphs.
-            self.image = None
-        else:
-            self.image = Image.fromstring(
-                "L", self._size, glyph_data['data_string'], "raw", "L", 0, 1)
-
-    def paste_to(self, dst, position, color):
-        if self.image is not None:
-            image = Image.new("LA", self.image.size, color)
-            image.putalpha(self.image)
-            dst.paste(image, pmap(operator.add, self._offset, position))
+            self._draw_text_line(line, font, line_box, alignment)
