@@ -1,10 +1,6 @@
-import operator
-
 from PIL import Image, ImageDraw
 
-
-def pmap(op, p0, p1):
-    return (op(p0[0], p1[0]), op(p0[1], p1[1]))
+from claypellet.utils import Rect
 
 
 class PebbleGraphicsContext(object):
@@ -29,27 +25,26 @@ class PebbleGraphicsContext(object):
     def get_image(self):
         if not self._flattened:
             for frame, child in self._children:
-                self.paste_image(child.get_image(),
-                                 (frame.origin.x, frame.origin.y))
+                self.paste_image(child.get_image(), frame.origin)
             self._flattened = True
         return self.image
 
-    def get_child_context(self, frame):
-        child = PebbleGraphicsContext(self._display,
-                                      (frame.size.w, frame.size.h))
+    def get_child_context(self, grect):
+        frame = Rect.from_grect(grect)
+        child = PebbleGraphicsContext(self._display, frame.size)
         self._children.append((frame, child))
         return child
 
     def tempimage(self, size):
         return Image.new('LA', size, (0, 0))
 
-    def paste_image(self, src, topleft, dst=None):
+    def paste_image(self, src, origin, dst=None):
         if dst is None:
             dst = self.image
-        dst.paste(src, topleft, src.split()[-1])
+        dst.paste(src, origin, src.split()[-1])
 
     def bgfill(self, color):
-        self.image.paste(color, (0, 0, self.image.size[0], self.image.size[1]))
+        self.image.paste(color, Rect((0, 0), self.image.size).get_box())
 
     def draw_line(self, gpoint0, gpoint1):
         draw = ImageDraw.Draw(self.image)
@@ -107,13 +102,16 @@ class PebbleGraphicsContext(object):
         self._draw_circle(draw, center, radius, outline_color, fill=False)
 
     def draw_round_rect(self, grect, radius, outline_color, fill_color):
-        rect_box = ((0, 0), (grect.size.w - 1, grect.size.h - 1))
-        rect_image = self.tempimage((grect.size.w, grect.size.h))
-        rect_draw = ImageDraw.Draw(rect_image)
-        rect_draw.rectangle(rect_box, outline=outline_color, fill=fill_color)
+        rect = Rect.from_grect(grect)
 
-        circ_box = ((0, 0), (radius * 2 + 1, radius * 2 + 1))
-        circ_image = self.tempimage(circ_box[1])
+        rect_box = Rect((0, 0), (rect.w - 1, rect.h - 1))
+        rect_image = self.tempimage((rect.w, rect.h))
+        rect_draw = ImageDraw.Draw(rect_image)
+        rect_draw.rectangle(rect_box.get_box(),
+                            outline=outline_color, fill=fill_color)
+
+        circ_box = Rect((0, 0), (radius * 2 + 1, radius * 2 + 1))
+        circ_image = self.tempimage(circ_box.size)
         circ_draw = ImageDraw.Draw(circ_image)
         center = (radius, radius)
         if fill_color != self.COLOR_CLEAR:
@@ -126,16 +124,14 @@ class PebbleGraphicsContext(object):
             self.paste_image(corner_image, (sx, sy), rect_image)
 
         fix_corner(0, 0, 0, 0)
-        fix_corner(grect.size.w - radius, 0, radius + 1, 0)
-        fix_corner(0, grect.size.h - radius, 0, radius + 1)
-        fix_corner(grect.size.w - radius, grect.size.h - radius,
-                   radius + 1, radius + 1)
+        fix_corner(rect.w - radius, 0, radius + 1, 0)
+        fix_corner(0, rect.h - radius, 0, radius + 1)
+        fix_corner(rect.w - radius, rect.h - radius, radius + 1, radius + 1)
 
-        self.paste_image(rect_image, (grect.origin.x, grect.origin.y))
+        self.paste_image(rect_image, rect.origin)
 
     def _draw_text_line(self, text, dfont, text_box, alignment):
-        text_image = self.tempimage(
-            pmap(operator.sub, text_box[1], text_box[0]))
+        text_image = self.tempimage(text_box.size)
 
         left = 0
         for ch in text:
@@ -143,25 +139,23 @@ class PebbleGraphicsContext(object):
             glyph.paste_to(text_image, (left, 0), self.text_color)
             left += glyph.advance
 
-        draw_image = text_image.crop((0, 0, left, text_image.size[1]))
+        draw_box = Rect(text_box.origin, (left, text_box.h))
+        draw_image = text_image.crop(draw_box.get_box())
 
         if alignment == self.ALIGN_LEFT:
-            offset = 0
+            pass
         elif alignment == self.ALIGN_CENTER:
-            offset = (text_image.size[0] - left) / 2
+            draw_box = draw_box.move(((text_box.w - left) / 2, 0))
         elif alignment == self.ALIGN_RIGHT:
-            offset = text_image.size[0] - left
+            draw_box = draw_box.move((text_box.w - left, 0))
 
-        self.paste_image(draw_image,
-                         (text_box[0][0] + offset, text_box[0][1]))
+        self.paste_image(draw_image, draw_box.origin)
 
-    def draw_text(self, text, font, box, alignment):
+    def draw_text(self, text, font, grect, alignment):
         # TODO: overflow, layout(?)
-        text_box = ((box.origin.x, box.origin.y),
-                    (box.origin.x + box.size.w, box.origin.y + box.size.h))
+        text_box = Rect.from_grect(grect)
 
         for i, line in enumerate(text.splitlines()):
-            line_box = (
-                (text_box[0][0], text_box[0][1] + i * font.max_height),
-                text_box[1])
+            line_box = Rect((text_box.x, text_box.y + i * font.max_height),
+                            (text_box.w, text_box.h - i * font.max_height))
             self._draw_text_line(line, font, line_box, alignment)

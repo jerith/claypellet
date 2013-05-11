@@ -33,5 +33,8 @@ class Rect(object):
     def get_box(self):
         return (self.x, self.y, self.x + self.w, self.y + self.h)
 
+    def copy(self, offset):
+        return type(self)(self.origin, self.size)
+
     def move(self, offset):
         return type(self)((self.x + offset[0], self.y + offset[1]), self.size)
