@@ -49,13 +49,13 @@ class PebbleFont(object):
             for i in range(32):
                 b = (word >> i) % 2
                 bitmap.append({
-                    0: '\x00\x00\x00\x00',
-                    1: '\xff\xff\xff\xff',
+                    0: '\x00',
+                    1: '\xff',
                 }[b])
             bmoffset += 4
 
         header.pop('_')
-        header['data_string'] = ''.join(bitmap)[:bmsize * 4]
+        header['data_string'] = ''.join(bitmap)[:bmsize]
 
         return header
 

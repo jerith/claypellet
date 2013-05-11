@@ -228,19 +228,19 @@ class PebbleHarness(PebbleHarnessBase):
     def graphics_fill_rect(self, gctxp, rect, radius, corner_mask):
         # TODO: corner_mask
         gctx = self.get_graphics_context(gctxp)
-        gctx.draw_round_rect(rect, radius, gctx.fill_color, width=0)
+        gctx.draw_round_rect(rect, radius, gctx.fill_color, gctx.fill_color)
 
     def graphics_draw_circle(self, gctxp, point, radius):
         gctx = self.get_graphics_context(gctxp)
-        gctx.draw_circle(point, radius, gctx.stroke_color, width=1)
+        gctx.draw_circle(point, radius, gctx.stroke_color, gctx.COLOR_CLEAR)
 
     def graphics_fill_circle(self, gctxp, point, radius):
         gctx = self.get_graphics_context(gctxp)
-        gctx.draw_circle(point, radius, gctx.fill_color, width=0)
+        gctx.draw_circle(point, radius, gctx.fill_color, gctx.fill_color)
 
     def graphics_draw_round_rect(self, gctxp, rect, radius):
         gctx = self.get_graphics_context(gctxp)
-        gctx.draw_round_rect(rect, radius, gctx.stroke_color, width=1)
+        gctx.draw_round_rect(rect, radius, gctx.stroke_color, gctx.COLOR_CLEAR)
 
     # Graphics - Drawing - Paths
 
@@ -472,6 +472,8 @@ class PebbleWindow(object):
 
     def render(self, gctx):
         self.root_layer.render(gctx)
+        gctx.bgfill(self._harness._translate_color(gctx,
+                                                   self.background_color))
         self.is_render_scheduled = False
 
 
