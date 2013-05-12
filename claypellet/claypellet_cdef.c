@@ -3,6 +3,13 @@
  * by `FFI.cdef()'.
  ****************************************************************************/
 
+
+#define TRIG_MAX_RATIO ...
+#define TRIG_MAX_ANGLE ...
+#define ANIMATION_NORMALIZED_MIN ...
+#define ANIMATION_NORMALIZED_MAX ...
+
+
 struct Layer;
 struct AccelData;
 struct Animation;

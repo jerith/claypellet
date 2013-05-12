@@ -9,8 +9,8 @@ import pygame.time
 import pygame.image
 from pygame.locals import SWSURFACE, QUIT, KEYDOWN, K_ESCAPE, K_q, K_r, K_s
 
-
-from claypellet.render import PebbleGraphicsContext
+from .utils import Rect
+from .render import PebbleGraphicsContext
 
 
 class PebbleDisplay(object):
@@ -53,7 +53,7 @@ class PebbleDisplay(object):
 
     def render(self):
         screen_rect = self.get_screen_rect()
-        gctx = PebbleGraphicsContext(self, screen_rect.size)
+        gctx = PebbleGraphicsContext(self, None, None)
         self.harness.render(gctx)
         image = gctx.get_image()
         surface = pygame.image.fromstring(

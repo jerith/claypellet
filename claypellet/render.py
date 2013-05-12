@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 
-from claypellet.utils import Rect
+from .utils import Rect
 
 
 class PebbleGraphicsContext(object):
@@ -8,32 +8,46 @@ class PebbleGraphicsContext(object):
     COLOR_WHITE = (255, 255)
     COLOR_CLEAR = (192, 0)
 
+    COMP_ASSIGN = 'assign'
+    COMP_ASSIGN_INVERTED = 'assign_inverted'
+    COMP_OR = 'or'
+    COMP_AND = 'and'
+    COMP_CLEAR = 'clear'
+
     ALIGN_LEFT = 'left'
     ALIGN_CENTER = 'center'
     ALIGN_RIGHT = 'right'
 
-    stroke_color = COLOR_BLACK
     fill_color = COLOR_BLACK
-    text_color = COLOR_BLACK
+    stroke_color = COLOR_WHITE
+    text_color = COLOR_WHITE
 
-    def __init__(self, display, size):
+    compositing_mode = COMP_ASSIGN
+
+    def __init__(self, display, image, rect):
+        if image is None:
+            rect = Rect((0, 0), (144, 168))
+            image = Image.new('LA', rect.size, (0, 0))
         self._display = display
-        self.image = Image.new('LA', size, (0, 0))
+        self.image = image
+        self.rect = rect
         self._flattened = False
         self._children = []
 
-    def get_image(self):
-        if not self._flattened:
-            for frame, child in self._children:
-                self.paste_image(child.get_image(), frame.origin)
-            self._flattened = True
-        return self.image
-
     def get_child_context(self, grect):
-        frame = Rect.from_grect(grect)
-        child = PebbleGraphicsContext(self._display, frame.size)
-        self._children.append((frame, child))
+        frame = Rect.from_grect(grect).move(self.rect.origin)
+        child = PebbleGraphicsContext(self._display, self.image, frame)
+
+        # Child inherits properties.
+        child.fill_color = self.fill_color
+        child.stroke_color = self.stroke_color
+        child.text_color = self.text_color
+
+        self._children.append(child)
         return child
+
+    def get_image(self):
+        return self.image
 
     def tempimage(self, size):
         return Image.new('LA', size, (0, 0))
@@ -43,13 +57,57 @@ class PebbleGraphicsContext(object):
             dst = self.image
         dst.paste(src, origin, src.split()[-1])
 
+    def _compose_assign(self, bg_pixel, im_pixel):
+        if im_pixel[0]:
+            return self.COLOR_WHITE
+        else:
+            return self.COLOR_BLACK
+
+    def _compose_assign_inverted(self, bg_pixel, im_pixel):
+        if im_pixel[0]:
+            return self.COLOR_BLACK
+        else:
+            return self.COLOR_WHITE
+
+    def _compose_or(self, bg_pixel, im_pixel):
+        if im_pixel[0]:
+            return self.COLOR_WHITE
+        else:
+            return bg_pixel
+
+    def _compose_and(self, bg_pixel, im_pixel):
+        print "I don't know how to do 'GCompOpAnd', and it seems broken."
+        return bg_pixel
+
+    def _compose_clear(self, bg_pixel, im_pixel):
+        if im_pixel[0]:
+            return self.COLOR_BLACK
+        else:
+            return bg_pixel
+
+    def compose_image(self, image, rect):
+        bg_image = self.image.crop(rect.get_box())
+
+        comp_func = {
+            self.COMP_ASSIGN: self._compose_assign,
+            self.COMP_ASSIGN_INVERTED: self._compose_assign_inverted,
+            self.COMP_OR: self._compose_or,
+            self.COMP_AND: self._compose_and,
+            self.COMP_CLEAR: self._compose_clear,
+        }[self.compositing_mode]
+
+        pixels = [comp_func(bg_px, im_px) if im_px[1] else bg_px
+                  for bg_px, im_px in zip(bg_image.getdata(), image.getdata())]
+        bg_image.putdata(pixels)
+        self.paste_image(bg_image, rect.origin)
+
     def bgfill(self, color):
         self.image.paste(color, Rect((0, 0), self.image.size).get_box())
 
     def draw_line(self, gpoint0, gpoint1):
         draw = ImageDraw.Draw(self.image)
-        p0 = (gpoint0.x, gpoint0.y)
-        p1 = (gpoint1.x, gpoint1.y)
+        p0 = self.rect.move((gpoint0.x, gpoint0.y)).origin
+        p1 = self.rect.move((gpoint1.x, gpoint1.y)).origin
         draw.line((p0, p1), fill=self.stroke_color)
 
     def _draw_circle(self, draw, center, radius, color, fill=False):
@@ -96,13 +154,13 @@ class PebbleGraphicsContext(object):
 
     def draw_circle(self, gpoint, radius, outline_color, fill_color):
         draw = ImageDraw.Draw(self.image)
-        center = (gpoint.x, gpoint.y)
+        center = self.rect.move((gpoint.x, gpoint.y)).origin
         if fill_color != self.COLOR_CLEAR:
             self._draw_circle(draw, center, radius, fill_color, fill=True)
         self._draw_circle(draw, center, radius, outline_color, fill=False)
 
     def draw_round_rect(self, grect, radius, outline_color, fill_color):
-        rect = Rect.from_grect(grect)
+        rect = Rect.from_grect(grect).move(self.rect.origin)
 
         rect_box = Rect((0, 0), (rect.w - 1, rect.h - 1))
         rect_image = self.tempimage((rect.w, rect.h))
@@ -140,7 +198,7 @@ class PebbleGraphicsContext(object):
             left += glyph.advance
 
         draw_box = Rect(text_box.origin, (left, text_box.h))
-        draw_image = text_image.crop(draw_box.get_box())
+        draw_image = text_image.crop((0, 0, draw_box.w, draw_box.h))
 
         if alignment == self.ALIGN_LEFT:
             pass
@@ -153,9 +211,32 @@ class PebbleGraphicsContext(object):
 
     def draw_text(self, text, font, grect, alignment):
         # TODO: overflow, layout(?)
-        text_box = Rect.from_grect(grect)
+        text_box = Rect.from_grect(grect).move(self.rect.origin)
 
         for i, line in enumerate(text.splitlines()):
             line_box = Rect((text_box.x, text_box.y + i * font.max_height),
                             (text_box.w, text_box.h - i * font.max_height))
             self._draw_text_line(line, font, line_box, alignment)
+
+    def draw_bitmap(self, bitmap, grect):
+        rect = Rect.from_grect(grect).move(self.rect.origin)
+        image = self.tempimage(rect.size)
+        bmp_image = bitmap.get_image().convert("LA")
+
+        x = y = 0
+        while y < rect.h:
+            while x < rect.w:
+                image.paste(bmp_image, (x, y))
+                x += bitmap.rect.w
+            x = 0
+            y += bitmap.rect.h
+
+        self.compose_image(image, rect)
+
+    def draw_rotated_bitmap(self, bitmap, src_ic, dest_ic, angle):
+        angle = 360 - angle  # Pebble rotates CW, PIL rotates CCW.
+        ic_offset = (dest_ic.x - src_ic.x, dest_ic.y - src_ic.y)
+        image = self.tempimage(self.rect.size)
+        image.paste(bitmap.get_image(), ic_offset)
+        image = image.rotate(angle, Image.BILINEAR)
+        self.compose_image(image, self.rect)

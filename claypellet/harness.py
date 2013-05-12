@@ -5,6 +5,7 @@ from cffi import FFI
 
 from .resources import PebbleResources
 from .font import PebbleFont
+from .bitmap import PebbleBitmap
 from .harness_hooks import PebbleHarnessBase
 
 
@@ -46,10 +47,16 @@ class PebbleHarness(PebbleHarnessBase):
         self.windows = {}
         self.window_stack = []
         self.layers = {}
-        self.text_layers = {}
+        self.sublayers = {
+            'text': {},
+            'bitmap': {},
+            'rot_bitmap': {},
+            'rot_bitmap_pair': {},
+        }
         self.resources = None
         self.resource_handles = {}
         self.custom_fonts = {}
+        self.bitmaps = {}
         self.handlers = None
         self.last_tick = None
 
@@ -66,8 +73,8 @@ class PebbleHarness(PebbleHarnessBase):
     def get_inner_layer(self, somestruct):
         return self.layers[somestruct.layer]
 
-    def get_text_layer(self, text_layerp):
-        return self.text_layers[text_layerp[0]]
+    def get_sublayer(self, layer_type, sublayerp):
+        return self.sublayers[layer_type][sublayerp[0]]
 
     def get_resource(self, resource_handle):
         handle = ffi.cast('struct ClayResourceHandle *', resource_handle)
@@ -77,9 +84,12 @@ class PebbleHarness(PebbleHarnessBase):
         handle = ffi.cast('struct ClayResourceHandle *', font_handle)
         return self.custom_fonts[handle.file_id]
 
+    def get_bitmap(self, bitmap_handle):
+        handle = ffi.cast('struct ClayResourceHandle *', bitmap_handle)
+        return self.bitmaps[handle.file_id]
+
     def call_main(self):
         self.lib.call_main()
-        # self.app.pbl_main(ffi.NULL)
 
     def tick(self):
         last_tick = self.last_tick
@@ -198,17 +208,91 @@ class PebbleHarness(PebbleHarnessBase):
 
     # Graphics - Bitmaps
 
-    # bool bmp_init_container(int resource_id, BmpContainer *c);
+    def _bitmap_init(self, file_id, gbitmapp):
+        if file_id not in self.resource_handles:
+            resource_handle = PebbleResourceHandle(self, file_id)
+            self.resource_handles[file_id] = resource_handle
+        resource_handle = self.resource_handles[file_id]
+
+        if file_id not in self.bitmaps:
+            bitmap = PebbleBitmap(resource_handle.get_data())
+            self.bitmaps[file_id] = bitmap
+        bitmap = self.bitmaps[file_id]
+
+        gbitmapp.addr = ffi.cast('void *', resource_handle.get_handle())
+        gbitmapp.row_size_bytes = bitmap.row_size_bytes
+        gbitmapp.info_flags = bitmap.info_flags
+        gbitmapp.bounds = ffi.new('GRect *', bitmap.rect.get_grect_struct())[0]
+
+    def bitmap_layer_init(self, imagep, frame):
+        bmp_layer = PebbleBitmapLayer(self, imagep, frame)
+        self.sublayers['bitmap'][imagep[0]] = bmp_layer
+
+    def bitmap_layer_set_bitmap(self, imagep, gbitmapp):
+        self.get_sublayer('bitmap', imagep).set_bitmap(gbitmapp)
+
+    def bitmap_layer_set_compositing_mode(self, imagep, mode):
+        self.get_sublayer('bitmap', imagep).set_compositing_mode(mode)
+
+    def bmp_init_container(self, resource_id, containerp):
+        gbitmapp = ffi.addressof(containerp.bmp)
+        self._bitmap_init(resource_id, gbitmapp)
+        imagep = ffi.addressof(containerp.layer)
+        bmp_layer = PebbleBitmapLayer(self, imagep, gbitmapp.bounds)
+        self.sublayers['bitmap'][imagep[0]] = bmp_layer
+        bmp_layer.set_bitmap(gbitmapp)
+        return True
+
     # void bmp_deinit_container(BmpContainer *c);
 
-    # void graphics_draw_bitmap_in_rect(
-    #    GContext *ctx, const GBitmap *bitmap, GRect rect);
+    def graphics_draw_bitmap_in_rect(self, gctxp, gbitmapp, grect):
+        gctx = self.get_graphics_context(gctxp)
+        bitmap = self.get_bitmap(gbitmapp.addr)
+        gctx.draw_bitmap(bitmap, grect)
 
     # void rotbmp_deinit_container(RotBmpContainer *c);
-    # bool rotbmp_init_container(int resource_id, RotBmpContainer *c);
+
+    def rotbmp_init_container(self, resource_id, containerp):
+        gbitmapp = ffi.addressof(containerp.bmp)
+        self._bitmap_init(resource_id, gbitmapp)
+        imagep = ffi.addressof(containerp.layer)
+        rotbmp_layer = PebbleRotBitmapLayer(self, imagep, gbitmapp.bounds)
+        self.sublayers['rot_bitmap'][imagep[0]] = rotbmp_layer
+        rotbmp_layer.set_bitmap(gbitmapp)
+        return True
+
     # void rotbmp_pair_deinit_container(RotBmpPairContainer *c);
-    # bool rotbmp_pair_init_container(
-    #    int white_resource_id, int black_resource_id, RotBmpPairContainer *c);
+
+    def rotbmp_pair_init_container(self, white_id, black_id, containerp):
+        w_gbitmapp = ffi.addressof(containerp.white_bmp)
+        self._bitmap_init(white_id, w_gbitmapp)
+        b_gbitmapp = ffi.addressof(containerp.black_bmp)
+        self._bitmap_init(black_id, b_gbitmapp)
+
+        pairp = ffi.addressof(containerp.layer)
+        layer = PebbleRotBmpPairLayer(self, pairp, w_gbitmapp.bounds)
+        self.sublayers['rot_bitmap_pair'][pairp[0]] = layer
+
+        w_imagep = ffi.addressof(pairp.white_layer)
+        w_layer = PebbleRotBitmapLayer(self, w_imagep, w_gbitmapp.bounds)
+        self.sublayers['rot_bitmap'][w_imagep[0]] = w_layer
+        w_layer.set_bitmap(w_gbitmapp)
+        w_layer.set_compositing_mode(self.lib.GCompOpOr)
+        w_layer.set_corner_clip_color(self.lib.GColorBlack)
+        self.layer_add_child(ffi.addressof(pairp.layer),
+                             ffi.addressof(w_imagep.layer))
+
+        b_imagep = ffi.addressof(pairp.black_layer)
+        b_layer = PebbleRotBitmapLayer(self, b_imagep, b_gbitmapp.bounds)
+        self.sublayers['rot_bitmap'][b_imagep[0]] = b_layer
+        b_layer.set_bitmap(b_gbitmapp)
+        b_layer.set_compositing_mode(self.lib.GCompOpClear)
+        b_layer.set_corner_clip_color(self.lib.GColorWhite)
+        self.layer_add_child(ffi.addressof(pairp.layer),
+                             ffi.addressof(b_imagep.layer))
+
+        return True
+
     # void rotbmp_pair_layer_set_src_ic(RotBmpPairLayer *pair, GPoint ic);
     # void rotbmp_pair_layer_set_angle(RotBmpPairLayer *pair, int32_t angle);
 
@@ -266,6 +350,15 @@ class PebbleHarness(PebbleHarnessBase):
             self.lib.GTextAlignmentRight: gctx.ALIGN_RIGHT,
         }[align]
 
+    def _translate_comp_op(self, gctx, mode):
+        return {
+            self.lib.GCompOpAssign: gctx.COMP_ASSIGN,
+            self.lib.GCompOpAssignInverted: gctx.COMP_ASSIGN_INVERTED,
+            self.lib.GCompOpOr: gctx.COMP_OR,
+            self.lib.GCompOpAnd: gctx.COMP_AND,
+            self.lib.GCompOpClear: gctx.COMP_CLEAR,
+        }[mode]
+
     def graphics_context_set_stroke_color(self, gctxp, color):
         gctx = self.get_graphics_context(gctxp)
         gctx.stroke_color = self._translate_color(gctx, color)
@@ -277,6 +370,10 @@ class PebbleHarness(PebbleHarnessBase):
     def graphics_context_set_text_color(self, gctxp, color):
         gctx = self.get_graphics_context(gctxp)
         gctx.text_color = self._translate_color(gctx, color)
+
+    def graphics_context_set_compositing_mode(self, gctxp, mode):
+        gctx = self.get_graphics_context(gctxp)
+        gctx.compositing_mode = self._translate_comp_op(gctx, mode)
 
     # void graphics_context_set_compositing_mode(GContext *ctx, GCompOp mode);
 
@@ -320,17 +417,20 @@ class PebbleHarness(PebbleHarnessBase):
     def layer_add_child(self, parentp, childp):
         self.get_layer(parentp).add_child(childp)
 
-    # GRect layer_get_frame(Layer *layer);
+    def layer_get_frame(self, layerp):
+        return self.get_layer(layerp).get_frame()
 
     def layer_set_frame(self, layerp, frame):
         self.get_layer(layerp).set_frame(frame)
 
-    # GRect layer_get_bounds(Layer *layer);
+    def layer_get_bounds(self, layerp):
+        return self.get_layer(layerp).get_bounds()
 
     def layer_set_bounds(self, layerp, bounds):
         self.get_layer(layerp).set_bounds(bounds)
 
-    # void layer_set_hidden(Layer *layer, bool hidden);
+    def layer_set_hidden(self, layerp, hidden):
+        self.get_layer(layerp).set_hidden(hidden)
 
     def layer_init(self, layerp, frame):
         self.layers[layerp[0]] = PebbleLayer(self, layerp, frame)
@@ -380,25 +480,26 @@ class PebbleHarness(PebbleHarnessBase):
 
     def text_layer_init(self, text_layerp, frame):
         text_layer = PebbleTextLayer(self, text_layerp, frame)
-        self.text_layers[text_layerp[0]] = text_layer
+        self.sublayers['text'][text_layerp[0]] = text_layer
 
     # const char *text_layer_get_text(TextLayer *text_layer);
 
     def text_layer_set_text(self, text_layerp, text):
-        text_layer = self.get_text_layer(text_layerp)
+        text_layer = self.get_sublayer('text', text_layerp)
         text_layer.set_text(text)
 
     def text_layer_set_background_color(self, text_layerp, color):
-        self.get_text_layer(text_layerp).set_background_color(color)
+        self.get_sublayer('text', text_layerp).set_background_color(color)
 
     def text_layer_set_font(self, text_layerp, fontp):
-        self.get_text_layer(text_layerp).set_font(fontp)
+        self.get_sublayer('text', text_layerp).set_font(fontp)
 
     def text_layer_set_text_alignment(self, text_layerp, text_alignment):
-        self.get_text_layer(text_layerp).set_text_alignment(text_alignment)
+        self.get_sublayer('text', text_layerp).set_text_alignment(
+            text_alignment)
 
     def text_layer_set_text_color(self, text_layerp, color):
-        self.get_text_layer(text_layerp).set_text_color(color)
+        self.get_sublayer('text', text_layerp).set_text_color(color)
 
     # Time
 
@@ -462,6 +563,8 @@ class PebbleWindow(object):
         self._windowp.debug_name = debug_name
         wframe = ffi.new('GRect *', ((0, 0), (144, 168)))
         harness.init_inner_layer(windowp, wframe[0])
+        windowp.layer.window = windowp
+        self.background_color = self._harness.lib.GColorWhite
 
     @property
     def root_layer(self):
@@ -471,9 +574,9 @@ class PebbleWindow(object):
         self.background_color = color
 
     def render(self, gctx):
-        self.root_layer.render(gctx)
         gctx.bgfill(self._harness._translate_color(gctx,
                                                    self.background_color))
+        self.root_layer.render(gctx)
         self.is_render_scheduled = False
 
 
@@ -484,6 +587,8 @@ class PebbleLayer(object):
         self.set_frame(frame)
         bounds = ffi.new('GRect *', {'origin': (0, 0), 'size': frame.size})[0]
         layerp.bounds = bounds
+        layerp.window = ffi.NULL
+        layerp.hidden = False
 
     def set_frame(self, frame):
         self._layerp.frame = frame
@@ -492,12 +597,22 @@ class PebbleLayer(object):
         if self._layerp.bounds.size.h < frame.size.h:
             self._layerp.bounds.size.h = frame.size.h
 
+    def get_frame(self):
+        return self._layerp.frame
+
     def set_bounds(self, bounds):
         self._layerp.bounds = bounds
+
+    def get_bounds(self):
+        return self._layerp.bounds
+
+    def set_hidden(self, hidden):
+        self._layerp.hidden = hidden
 
     def add_child(self, layerp):
         assert layerp.parent == ffi.NULL
         layerp.parent = self._layerp
+        layerp.window = self._layerp.window
         if self._layerp.first_child == ffi.NULL:
             self._layerp.first_child = layerp
         else:
@@ -505,20 +620,21 @@ class PebbleLayer(object):
             while childp.next_sibling != ffi.NULL:
                 childp = childp.next_sibling
             childp.next_sibling = layerp
+        self.mark_dirty()
 
     def remove_from_parent(self):
         raise NotImplementedError("PebbleLayer.remove_from_parent")
 
     def get_window(self):
-        layerp = self._layerp
-        while layerp.parent != ffi.NULL:
-            layerp = layerp.parent
-        return self._harness.get_window(ffi.cast('Window *', layerp))
+        return self._harness.get_window(self._layerp.window)
 
     def mark_dirty(self):
-        self.get_window().is_render_scheduled = True
+        if self._layerp.window != ffi.NULL:
+            self.get_window().is_render_scheduled = True
 
     def render(self, gctx):
+        if self._layerp.hidden:
+            return
         my_gctx = gctx.get_child_context(self._layerp.frame)
         if self._layerp.update_proc != ffi.NULL:
             gctxp = self._harness.get_gctx_handle(my_gctx)
@@ -575,6 +691,85 @@ class PebbleTextLayer(object):
             # TODO: Fix this.
             h.graphics_text_draw(gctxp, tl.text, tl.font, layerp.bounds,
                                  0, self.text_alignment, ffi.NULL)
+
+
+class PebbleBitmapLayer(object):
+    def __init__(self, harness, imagep, frame):
+        self._harness = harness
+        self._imagep = imagep
+        harness.init_inner_layer(imagep, frame)
+        imagep.bitmap = ffi.NULL
+        imagep.compositing_mode = self._harness.lib.GCompOpAssign
+
+        self._update_proc = ffi.callback('LayerUpdateProc', self.update_proc)
+        imagep.layer.update_proc = self._update_proc
+
+    @property
+    def layer(self):
+        return self._harness.get_inner_layer(self._imagep)
+
+    def set_bitmap(self, gbitmapp):
+        self._imagep.bitmap = gbitmapp
+
+    def set_compositing_mode(self, mode):
+        self._imagep.compositing_mode = mode
+
+    def update_proc(self, layerp, gctxp):
+        h = self._harness
+        i = self._imagep
+        h.graphics_context_set_compositing_mode(gctxp, i.compositing_mode)
+        h.graphics_draw_bitmap_in_rect(gctxp, i.bitmap, i.layer.frame)
+
+
+class PebbleRotBitmapLayer(object):
+    def __init__(self, harness, imagep, frame):
+        self._harness = harness
+        self._imagep = imagep
+        harness.init_inner_layer(imagep, frame)
+        imagep.bitmap = ffi.NULL
+        imagep.compositing_mode = self._harness.lib.GCompOpAssign
+
+        self._update_proc = ffi.callback('LayerUpdateProc', self.update_proc)
+        imagep.layer.update_proc = self._update_proc
+
+    @property
+    def layer(self):
+        return self._harness.get_inner_layer(self._imagep)
+
+    def set_bitmap(self, gbitmapp):
+        self._imagep.bitmap = gbitmapp
+
+    def set_compositing_mode(self, mode):
+        self._imagep.compositing_mode = mode
+
+    def set_corner_clip_color(self, gcolor):
+        self._imagep.corner_clip_color = gcolor
+
+    def update_proc(self, layerp, gctxp):
+        h = self._harness
+        i = self._imagep
+        gctx = h.get_graphics_context(gctxp)
+        bitmap = h.get_bitmap(i.bitmap.addr)
+        angle = (360 * i.rotation) / h.lib.TRIG_MAX_ANGLE
+        h.graphics_context_set_compositing_mode(gctxp, i.compositing_mode)
+        gctx.draw_rotated_bitmap(bitmap, i.src_ic, i.dest_ic, angle)
+
+
+class PebbleRotBmpPairLayer(object):
+    def __init__(self, harness, pairp, frame):
+        self._harness = harness
+        self._pairp = pairp
+        harness.init_inner_layer(pairp, frame)
+
+        self._update_proc = ffi.callback('LayerUpdateProc', self.update_proc)
+        pairp.layer.update_proc = self._update_proc
+
+    @property
+    def layer(self):
+        return self._harness.get_inner_layer(self._imagep)
+
+    def update_proc(self, layerp, gctxp):
+        pass
 
 
 class PebbleResourceHandle(object):

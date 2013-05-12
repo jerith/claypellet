@@ -2,7 +2,7 @@ import struct
 
 from PIL import Image
 
-from claypellet.utils import Rect
+from .utils import Rect
 
 
 FONTINFO_FORMAT = '<BBHH'

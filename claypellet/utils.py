@@ -5,6 +5,9 @@ class Rect(object):
         self.origin = tuple(origin)
         self.size = tuple(size)
 
+    def __repr__(self):
+        return '<Rect %s %s>' % (self.origin, self.size)
+
     @property
     def x(self):
         return self.origin[0]
@@ -25,6 +28,10 @@ class Rect(object):
     def area(self):
         return self.w * self.h
 
+    @property
+    def bottomright(self):
+        return (self.x + self.w, self.y + self.h)
+
     @classmethod
     def from_grect(cls, grect):
         return cls((grect.origin.x, grect.origin.y),
@@ -32,6 +39,12 @@ class Rect(object):
 
     def get_box(self):
         return (self.x, self.y, self.x + self.w, self.y + self.h)
+
+    def get_grect_struct(self):
+        return {
+            'origin': {'x': self.x, 'y': self.y},
+            'size': {'w': self.w, 'h': self.h},
+        }
 
     def copy(self, offset):
         return type(self)(self.origin, self.size)
