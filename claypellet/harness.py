@@ -1,5 +1,6 @@
 import os.path
 import time
+from math import sin, cos, pi
 
 from cffi import FFI
 
@@ -92,6 +93,7 @@ class PebbleHarness(PebbleHarnessBase):
         self.lib.call_main()
 
     def tick(self):
+        self.remember = []  # Hang onto some cdatas until next tick.
         last_tick = self.last_tick
         self.last_tick = tick = time.localtime()
 
@@ -437,9 +439,21 @@ class PebbleHarness(PebbleHarnessBase):
 
     # Math
 
-    # int32_t cos_lookup(int32_t angle);
-    # int32_t sin_lookup(int32_t angle);
-    # GPoint grect_center_point(GRect *rect);
+    def cos_lookup(self, angle):
+        rads = (angle * 2 * pi) / self.lib.TRIG_MAX_ANGLE
+        return int(self.lib.TRIG_MAX_ANGLE * cos(rads))
+
+    def sin_lookup(self, angle):
+        rads = (angle * 2 * pi) / self.lib.TRIG_MAX_ANGLE
+        return int(self.lib.TRIG_MAX_ANGLE * sin(rads))
+
+    def grect_center_point(self, grect):
+        gpoint = ffi.new('GPoint *', {
+            'x': grect.origin.x + grect.size.w / 2,
+            'y': grect.origin.y + grect.size.h / 2,
+        })
+        self.remember.append(gpoint)
+        return gpoint[0]
 
     # Resources
 
