@@ -618,9 +618,6 @@ class PebbleHarness(PebbleHarnessBase):
         buf[:len(timestr)] = timestr
         buf[len(timestr)] = '\0'  # Is this necessary?
 
-    # void string_format_time(
-    #    char *ptr, size_t maxsize, const char *format, const PblTm *timeptr);
-
     # void psleep(int millis);
 
     # Timers

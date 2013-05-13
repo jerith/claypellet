@@ -7,10 +7,10 @@ functionality prototyping.
 The name comes from the fact that claypellet is more malleable than a Pebble
 and also significatly less solid and robust.
 
-This is very experimental at present. I have implemented just enough to get one
-of my basic watchface apps working. If you need any help getting it working or
-have suggestions for features, I generally hang out in #pebble on the freenode
-IRC network.
+This is very experimental at present. I have implemented just enough to a few
+watchface apps running. If you need any help getting it working or have
+suggestions for features, I generally hang out in #pebble on the freenode IRC
+network.
 
 License
 -------
@@ -63,7 +63,38 @@ keyboard to make things happen.
   * `r` to reload the app. You'll have to run `compile_pebble_app.sh` to
     recompile if you've made any changes.
   * `s` to take a screenshot. (Written to the current directory with a
-    timestamped filename.
+    timestamped filename.)
+
+TODO
+----
+
+There are a bunch of documented API functions still unimplemented:
+
+  * All animation-related APIs.
+  * A few graphics APIs, including paths, lines and pixels.
+  * All "hardware" APIs: backlight, buttons, vibration.
+  * Raw resource access.
+  * System fonts. (See below.)
+  * Some miscellaneous functions here and there not mentioned above.
+
+All documented functions have commented C function signatures in `harness.py`
+so they should be fairly easy to find. All functions declared in `pebble_os.h`
+have callback hooks defined and stub implementations in the generated C and
+Python code. I've implemented a few undocumented API functions because some
+apps I tried to run used them.
+
+System font support shouldn't be too hard to add once we have access to the
+system fonts. An appropriately-licensed resource pack or something would
+probably be the easiest way. Alternately, if someone wants to build a resource
+pack of "similar enough" equivalents, we could probably start using those
+instead of just refusing to display text.
+
+I haven't really decided how best to do button input, but binding to arrow keys
+seems like a good plan. This hasn't been a priority since I've only been
+testing with watchface apps and none of them use input of any kind.
+
+Simulating communication seems like it'll be hard. Maybe someone else wants to
+give that a go?
 
 Bugs and issues
 ---------------
