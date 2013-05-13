@@ -373,8 +373,11 @@ class PebbleHarness(PebbleHarnessBase):
 
         return True
 
-    # void rotbmp_pair_layer_set_src_ic(RotBmpPairLayer *pair, GPoint ic);
-    # void rotbmp_pair_layer_set_angle(RotBmpPairLayer *pair, int32_t angle);
+    def rotbmp_pair_layer_set_src_ic(self, pairp, ic):
+        self.get_sublayer('rot_bitmap_pair', pairp).set_src_ic(ic)
+
+    def rotbmp_pair_layer_set_angle(self, pairp, angle):
+        self.get_sublayer('rot_bitmap_pair', pairp).set_angle(angle)
 
     # Graphics - Contexts
 
@@ -465,6 +468,9 @@ class PebbleHarness(PebbleHarnessBase):
     #    const GTextLayoutCacheRef layout);
     def graphics_text_draw(self, gctxp, text, font, box, overflow_mode,
                            alignment, layout):
+        if font == ffi.NULL:
+            print "Font not found, aborting test draw."
+            return
         gctx = self.get_graphics_context(gctxp)
         gctx.draw_text(ffi.string(text), self.get_custom_font(font), box,
                        self._translate_align(gctx, alignment))
@@ -772,6 +778,10 @@ class PebbleTextLayer(object):
         self._text_layerp = text_layerp
         harness.init_inner_layer(text_layerp, frame)
         self._update_proc = ffi.callback('LayerUpdateProc', self.update_proc)
+        self.background_color = self._harness.lib.GColorClear
+        self.text_color = self._harness.lib.GColorBlack
+        self.text_alignment = self._harness.lib.GTextAlignmentLeft
+        text_layerp.font = ffi.NULL
         text_layerp.layer.update_proc = self._update_proc
 
     @property
@@ -826,6 +836,7 @@ class PebbleBitmapLayer(object):
 
     def set_bitmap(self, gbitmapp):
         self._imagep.bitmap = gbitmapp
+        self.layer.mark_dirty()
 
     def set_compositing_mode(self, mode):
         self._imagep.compositing_mode = mode
@@ -854,6 +865,7 @@ class PebbleRotBitmapLayer(object):
 
     def set_bitmap(self, gbitmapp):
         self._imagep.bitmap = gbitmapp
+        self.layer.mark_dirty()
 
     def set_compositing_mode(self, mode):
         self._imagep.compositing_mode = mode
@@ -883,7 +895,20 @@ class PebbleRotBmpPairLayer(object):
 
     @property
     def layer(self):
-        return self._harness.get_inner_layer(self._imagep)
+        return self._harness.get_inner_layer(self._pairp)
+
+    def set_angle(self, angle):
+        self._pairp.white_layer.rotation = angle
+        self._pairp.black_layer.rotation = angle
+        self.layer.mark_dirty()
+
+    def set_src_ic(self, ic):
+        self._pairp.white_layer.src_ic = ic
+        self._pairp.black_layer.src_ic = ic
+        self.layer.mark_dirty()
+
+    def set_compositing_mode(self, mode):
+        self._imagep.compositing_mode = mode
 
     def update_proc(self, layerp, gctxp):
         pass

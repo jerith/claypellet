@@ -241,5 +241,4 @@ class PebbleGraphicsContext(object):
         image = self.tempimage(self.rect.size)
         image.paste(bitmap.get_image(), ic_offset)
         image = image.rotate(angle, Image.BILINEAR)
-        rect = self.rect.move((grect_bmp.origin.x, grect_bmp.origin.y))
-        self.compose_image(image, rect.move(bitmap.rect.origin))
+        self.compose_image(image, self.rect)
