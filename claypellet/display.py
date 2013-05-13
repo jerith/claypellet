@@ -44,7 +44,7 @@ class PebbleDisplay(object):
             if should_render:
                 self.render()
                 pygame.display.flip()
-            clock.tick(25)
+            clock.tick(30)
 
     def get_screen_rect(self):
         rect = pygame.Rect(0, 0, 144, 168)

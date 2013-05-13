@@ -1,6 +1,6 @@
 import os.path
 import time
-from math import sin, cos, pi
+from math import sin, cos, pi, sqrt, ceil
 
 from cffi import FFI
 
@@ -8,6 +8,7 @@ from .resources import PebbleResources
 from .font import PebbleFont
 from .bitmap import PebbleBitmap
 from .harness_hooks import PebbleHarnessBase
+from .utils import Rect
 
 
 package_dir = os.path.dirname(__file__)
@@ -38,6 +39,9 @@ class PebbleHarness(PebbleHarnessBase):
 
     def load_app(self, unload=False):
         if unload:
+            deinit_handler = self.handlers['deinit_handler']
+            if deinit_handler != ffi.NULL:
+                deinit_handler(self.app_ctx)
             self.lib.deinit_claypellet()
 
         print "Loading app..."
@@ -45,6 +49,7 @@ class PebbleHarness(PebbleHarnessBase):
             raise Exception("Can't load app.")
         self.lib.call_setup_callbacks(*self._callbacks)
         print "App loaded."
+        self.app_ctx = ffi.new('char[]', "claypellet")
         self.windows = {}
         self.window_stack = []
         self.layers = {}
@@ -56,10 +61,13 @@ class PebbleHarness(PebbleHarnessBase):
         }
         self.resources = None
         self.resource_handles = {}
+        self.next_app_timer_id = 0
+        self.app_timers = {}
         self.custom_fonts = {}
         self.bitmaps = {}
         self.handlers = None
         self.last_tick = None
+        self.sent_first_timer = False
 
     @property
     def top_window(self):
@@ -90,47 +98,67 @@ class PebbleHarness(PebbleHarnessBase):
         return self.bitmaps[handle.file_id]
 
     def call_main(self):
-        self.lib.call_main()
+        self.lib.call_main(ffi.cast('AppContextRef', self.app_ctx))
 
     def tick(self):
         self.remember = []  # Hang onto some cdatas until next tick.
         last_tick = self.last_tick
-        self.last_tick = tick = time.localtime()
+        self.last_tick = tick = time.time()
 
         if last_tick is None:
             if self.handlers['init_handler'] != ffi.NULL:
                 self.handlers['init_handler'](ffi.NULL)
             return self.top_window.is_render_scheduled
 
+        timer_handler = self.handlers['timer_handler']
+        if timer_handler != ffi.NULL:
+            self._timer_handler(timer_handler, tick)
+
         tick_handler = self.handlers['tick_info']['tick_handler']
         if tick_handler != ffi.NULL:
-            timep = ffi.new('PblTm *')
-            self.mkpbltm(tick, timep)
-
-            units_changed = None
-            if tick.tm_year > last_tick.tm_year:
-                units_changed = self.lib.YEAR_UNIT
-            elif tick.tm_mon > last_tick.tm_mon:
-                units_changed = self.lib.MONTH_UNIT
-            elif tick.tm_mday > last_tick.tm_mday:
-                units_changed = self.lib.DAY_UNIT
-            elif tick.tm_hour > last_tick.tm_hour:
-                units_changed = self.lib.HOUR_UNIT
-            elif tick.tm_min > last_tick.tm_min:
-                units_changed = self.lib.MINUTE_UNIT
-            elif tick.tm_sec > last_tick.tm_sec:
-                units_changed = self.lib.SECOND_UNIT
-
-            tick_units = self.handlers['tick_info']['tick_units']
-            if units_changed is not None and units_changed >= tick_units:
-                tick_eventp = ffi.new('PebbleTickEvent *', {
-                    'units_changed': units_changed,
-                    'tick_time': timep,
-                })
-                tick_handler(ffi.NULL, tick_eventp)
+            self._tick_handler(tick_handler, tick, last_tick)
 
         # TODO: More events
         return self.top_window.is_render_scheduled
+
+    def _timer_handler(self, timer_handler, tick):
+        for app_timer in self.app_timers.values():
+            if tick > app_timer['tick'] + (app_timer['timeout_ms'] / 1000.):
+                self.app_timers.pop(app_timer['timer_id'])
+                timer_handler(self.app_ctx, app_timer['timer_id'],
+                              app_timer['cookie'])
+
+    def _tick_handler(self, tick_handler, tick, last_tick):
+        ttm = time.localtime(tick)
+        lttm = time.localtime(last_tick)
+
+        units_changed = None
+        if ttm.tm_year > lttm.tm_year:
+            units_changed = self.lib.YEAR_UNIT
+        elif ttm.tm_mon > lttm.tm_mon:
+            units_changed = self.lib.MONTH_UNIT
+        elif ttm.tm_mday > lttm.tm_mday:
+            units_changed = self.lib.DAY_UNIT
+        elif ttm.tm_hour > lttm.tm_hour:
+            units_changed = self.lib.HOUR_UNIT
+        elif ttm.tm_min > lttm.tm_min:
+            units_changed = self.lib.MINUTE_UNIT
+        elif ttm.tm_sec > lttm.tm_sec:
+            units_changed = self.lib.SECOND_UNIT
+
+        tick_units = self.handlers['tick_info']['tick_units']
+        if not self.sent_first_timer:
+            # HACK? I don't know what triggers the first timer event.
+            tick_units = self.lib.SECOND_UNIT
+        if units_changed is not None and units_changed >= tick_units:
+            timep = ffi.new('PblTm *')
+            self.mkpbltm(ttm, timep)
+            tick_eventp = ffi.new('PebbleTickEvent *', {
+                'units_changed': units_changed,
+                'tick_time': timep,
+            })
+            tick_handler(ffi.NULL, tick_eventp)
+            self.sent_first_timer = True
 
     def mkpbltm(self, time_tick, timep):
         timep.tm_sec = time_tick.tm_sec
@@ -197,14 +225,14 @@ class PebbleHarness(PebbleHarnessBase):
     def app_event_loop(self, app_task_ctx, handlers):
         self.handlers = {
             'init_handler': handlers.init_handler,
-            # 'deinit_handler': handlers.deinit_handler,
+            'deinit_handler': handlers.deinit_handler,
             # 'render_handler': handlers.render_handler,
             # 'input_handlers': handlers.input_handlers,
             'tick_info': {
                 'tick_handler': handlers.tick_info.tick_handler,
                 'tick_units': handlers.tick_info.tick_units,
             },
-            # 'timer_handler': handlers.timer_handler,
+            'timer_handler': handlers.timer_handler,
             # 'messaging_info': handlers.messaging_info,
         }
 
@@ -245,14 +273,20 @@ class PebbleHarness(PebbleHarnessBase):
         bmp_layer.set_bitmap(gbitmapp)
         return True
 
-    # void bmp_deinit_container(BmpContainer *c);
+    def bmp_deinit_container(self, containerp):
+        layerp = ffi.addressof(containerp.layer)
+        self.layer_remove_from_parent(ffi.addressof(layerp.layer))
+        self.sublayers['bitmap'].pop(layerp[0])
 
     def graphics_draw_bitmap_in_rect(self, gctxp, gbitmapp, grect):
         gctx = self.get_graphics_context(gctxp)
         bitmap = self.get_bitmap(gbitmapp.addr)
-        gctx.draw_bitmap(bitmap, grect)
+        gctx.draw_bitmap(bitmap, gbitmapp.bounds, grect)
 
-    # void rotbmp_deinit_container(RotBmpContainer *c);
+    def rotbmp_deinit_container(self, containerp):
+        layerp = ffi.addressof(containerp.layer)
+        self.layer_remove_from_parent(ffi.addressof(layerp.layer))
+        self.sublayers['rot_bitmap'].pop(layerp[0])
 
     def rotbmp_init_container(self, resource_id, containerp):
         gbitmapp = ffi.addressof(containerp.bmp)
@@ -263,33 +297,77 @@ class PebbleHarness(PebbleHarnessBase):
         rotbmp_layer.set_bitmap(gbitmapp)
         return True
 
-    # void rotbmp_pair_deinit_container(RotBmpPairContainer *c);
+    def rotbmp_pair_deinit_container(self, containerp):
+        pairp = ffi.addressof(containerp.layer)
+        w_layerp = ffi.addressof(pairp.white_layer)
+        b_layerp = ffi.addressof(pairp.black_layer)
+        self.layer_remove_from_parent(ffi.addressof(w_layerp.layer))
+        self.layer_remove_from_parent(ffi.addressof(b_layerp.layer))
+        self.layer_remove_from_parent(ffi.addressof(pairp.layer))
+        self.sublayers['rot_bitmap'].pop(w_layerp[0])
+        self.sublayers['rot_bitmap'].pop(b_layerp[0])
+        self.sublayers['rot_bitmap_pair'].pop(pairp[0])
+
+    def _new_grectp(self, origin_or_rect, size=None):
+        if size is not None:
+            origin_or_rect = Rect(origin_or_rect, size)
+        return ffi.new("GRect *", origin_or_rect.get_grect_struct())
 
     def rotbmp_pair_init_container(self, white_id, black_id, containerp):
+        # We have to do some silly things with these bitmaps to make rotation
+        # work. We assume that both images are the same size and only work with
+        # the dimensions on the white one.
+
         w_gbitmapp = ffi.addressof(containerp.white_bmp)
         self._bitmap_init(white_id, w_gbitmapp)
         b_gbitmapp = ffi.addressof(containerp.black_bmp)
         self._bitmap_init(black_id, b_gbitmapp)
+        bmp_rect = Rect.from_grect(w_gbitmapp.bounds)
+
+        # Find the length of the diagonal across the bitmap, because this is
+        # the maximum width and height we need to render for an arbitrary
+        # rotation.
+
+        # TODO: Figure out how to handle images that don't originate at (0, 0).
+
+        dimension = int(ceil(sqrt(bmp_rect.w ** 2 + bmp_rect.h ** 2)))
+        dx = (dimension - bmp_rect.w) / 2
+        dy = (dimension - bmp_rect.h) / 2
+
+        framep = self._new_grectp((0, 0), (dimension, dimension))
+        bmp_framep = self._new_grectp(bmp_rect.move((dx, dy)))
+
+        # Set the bounds in the GBitmap struct.
+        w_gbitmapp.bounds = bmp_framep[0]
+        b_gbitmapp.bounds = bmp_framep[0]
+
+        # Calculate our `ic' values, whatever those are.
+        src_icp = ffi.new("GPoint *", (bmp_rect.w / 2, bmp_rect.h / 2))
+        dest_icp = ffi.new("GPoint *", (dimension / 2, dimension / 2))
 
         pairp = ffi.addressof(containerp.layer)
-        layer = PebbleRotBmpPairLayer(self, pairp, w_gbitmapp.bounds)
+        layer = PebbleRotBmpPairLayer(self, pairp, framep[0])
         self.sublayers['rot_bitmap_pair'][pairp[0]] = layer
 
         w_imagep = ffi.addressof(pairp.white_layer)
-        w_layer = PebbleRotBitmapLayer(self, w_imagep, w_gbitmapp.bounds)
+        w_imagep.src_ic = src_icp[0]
+        w_imagep.dest_ic = dest_icp[0]
+        w_layer = PebbleRotBitmapLayer(self, w_imagep, framep[0])
         self.sublayers['rot_bitmap'][w_imagep[0]] = w_layer
-        w_layer.set_bitmap(w_gbitmapp)
         w_layer.set_compositing_mode(self.lib.GCompOpOr)
         w_layer.set_corner_clip_color(self.lib.GColorBlack)
+        w_layer.set_bitmap(w_gbitmapp)
         self.layer_add_child(ffi.addressof(pairp.layer),
                              ffi.addressof(w_imagep.layer))
 
         b_imagep = ffi.addressof(pairp.black_layer)
-        b_layer = PebbleRotBitmapLayer(self, b_imagep, b_gbitmapp.bounds)
+        b_imagep.src_ic = src_icp[0]
+        b_imagep.dest_ic = dest_icp[0]
+        b_layer = PebbleRotBitmapLayer(self, b_imagep, framep[0])
         self.sublayers['rot_bitmap'][b_imagep[0]] = b_layer
-        b_layer.set_bitmap(b_gbitmapp)
         b_layer.set_compositing_mode(self.lib.GCompOpClear)
         b_layer.set_corner_clip_color(self.lib.GColorWhite)
+        b_layer.set_bitmap(b_gbitmapp)
         self.layer_add_child(ffi.addressof(pairp.layer),
                              ffi.addressof(b_imagep.layer))
 
@@ -541,10 +619,20 @@ class PebbleHarness(PebbleHarnessBase):
 
     # Timers
 
-    # AppTimerHandle app_timer_send_event(
-    #    AppContextRef app_ctx, uint32_t timeout_ms, uint32_t cookie);
-    # bool app_timer_cancel_event(
-    #    AppContextRef app_ctx_ref, AppTimerHandle handle);
+    def app_timer_send_event(self, app_ctx, timeout_ms, cookie):
+        timer_id = self.next_app_timer_id
+        self.next_app_timer_id += 1
+        self.app_timers[timer_id] = {
+            'timer_id': timer_id,
+            'cookie': cookie,
+            'timeout_ms': timeout_ms,
+            'tick': self.last_tick,
+        }
+        return timer_id
+
+    def app_timer_cancel_event(self, app_ctx, timer_id):
+        app_timer = self.app_timers.pop(timer_id, None)
+        return app_timer is not None
 
     # Windows
 
@@ -637,7 +725,21 @@ class PebbleLayer(object):
         self.mark_dirty()
 
     def remove_from_parent(self):
-        raise NotImplementedError("PebbleLayer.remove_from_parent")
+        parentp = self._layerp.parent
+        if parentp == ffi.NULL:
+            # We're already orphaned.
+            return
+
+        siblingp = parentp.first_child
+        if siblingp == self._layerp:
+            parentp.first_child = self._layerp.next_sibling
+        else:
+            while siblingp.next_sibling != self._layerp:
+                siblingp = siblingp.next_sibling
+            siblingp.next_sibling = self._layerp.next_sibling
+
+        self._layerp.parent = ffi.NULL
+        self._layerp.next_sibling = ffi.NULL
 
     def get_window(self):
         return self._harness.get_window(self._layerp.window)
@@ -766,7 +868,8 @@ class PebbleRotBitmapLayer(object):
         bitmap = h.get_bitmap(i.bitmap.addr)
         angle = (360 * i.rotation) / h.lib.TRIG_MAX_ANGLE
         h.graphics_context_set_compositing_mode(gctxp, i.compositing_mode)
-        gctx.draw_rotated_bitmap(bitmap, i.src_ic, i.dest_ic, angle)
+        gctx.draw_rotated_bitmap(bitmap, i.bitmap.bounds, i.src_ic, i.dest_ic,
+                                 angle)
 
 
 class PebbleRotBmpPairLayer(object):

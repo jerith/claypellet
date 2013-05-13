@@ -3,7 +3,7 @@
  * gets generated.
  ***************************************************************************/
 
-void call_main(void);
+void call_main(AppContextRef app_ctx);
 void deinit_claypellet(void);
 int init_claypellet(char *path);
 

@@ -21,8 +21,8 @@ static setup_callbacks_t setup_callbacks_func;
 static pbl_main_t pbl_main_func;
 
 
-void call_main(void) {
-    pbl_main_func(NULL);
+void call_main(AppContextRef app_ctx) {
+    pbl_main_func(app_ctx);
 }
 
 void deinit_claypellet(void) {

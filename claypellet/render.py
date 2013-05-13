@@ -49,8 +49,8 @@ class PebbleGraphicsContext(object):
     def get_image(self):
         return self.image
 
-    def tempimage(self, size):
-        return Image.new('LA', size, (0, 0))
+    def tempimage(self, size, color=(0, 0)):
+        return Image.new('LA', size, color)
 
     def paste_image(self, src, origin, dst=None):
         if dst is None:
@@ -218,25 +218,28 @@ class PebbleGraphicsContext(object):
                             (text_box.w, text_box.h - i * font.max_height))
             self._draw_text_line(line, font, line_box, alignment)
 
-    def draw_bitmap(self, bitmap, grect):
+    def draw_bitmap(self, bitmap, grect_bmp, grect):
+        bmp_rect = Rect.from_grect(grect_bmp)
         rect = Rect.from_grect(grect).move(self.rect.origin)
-        image = self.tempimage(rect.size)
+        image = self.tempimage(rect.size, self.COLOR_BLACK)
         bmp_image = bitmap.get_image().convert("LA")
 
-        x = y = 0
+        x = bmp_rect.x
+        y = bmp_rect.y
         while y < rect.h:
             while x < rect.w:
                 image.paste(bmp_image, (x, y))
-                x += bitmap.rect.w
-            x = 0
-            y += bitmap.rect.h
+                x += bmp_rect.x * 2 + bmp_rect.w
+            x = bmp_rect.x
+            y += bmp_rect.y * 2 + bmp_rect.h
 
         self.compose_image(image, rect)
 
-    def draw_rotated_bitmap(self, bitmap, src_ic, dest_ic, angle):
+    def draw_rotated_bitmap(self, bitmap, grect_bmp, src_ic, dest_ic, angle):
         angle = 360 - angle  # Pebble rotates CW, PIL rotates CCW.
         ic_offset = (dest_ic.x - src_ic.x, dest_ic.y - src_ic.y)
         image = self.tempimage(self.rect.size)
         image.paste(bitmap.get_image(), ic_offset)
         image = image.rotate(angle, Image.BILINEAR)
-        self.compose_image(image, self.rect)
+        rect = self.rect.move((grect_bmp.origin.x, grect_bmp.origin.y))
+        self.compose_image(image, rect.move(bitmap.rect.origin))
