@@ -5,6 +5,7 @@ from math import sin, cos, pi, sqrt, ceil
 from cffi import FFI
 
 from .resources import PebbleResources
+from .system_resources import PebbleSystemResources
 from .font import PebbleFont
 from .bitmap import PebbleBitmap
 from .harness_hooks import PebbleHarnessBase
@@ -23,19 +24,29 @@ ffi.cdef('\n'.join(open(f).read() for f in (cdef_file, h_file)))
 
 
 class PebbleHarness(PebbleHarnessBase):
-    def __init__(self, app_lib, resources_file, include_dirs=None):
-        self.resources_file = resources_file
+    def __init__(self, app_lib, resources_file, firmware_file=None,
+                 include_dirs=None):
         if '/' not in app_lib:
             app_lib = './' + app_lib
         self.app_lib = app_lib
+        self.resources_file = resources_file
+        self.firmware_file = firmware_file
 
         if include_dirs is None:
             include_dirs = [package_dir, './include']
 
         self.lib = ffi.verify(open(c_file).read(), include_dirs=include_dirs)
+        self.setup_system_resources()
         print "Setting up callbacks..."
         self.setup_callbacks()
         self.load_app()
+
+    def setup_system_resources(self):
+        self.system_resources = None
+        if self.firmware_file is None:
+            print "No firmware image provided, system resources unavailable."
+        else:
+            self.system_resources = PebbleSystemResources(self.firmware_file)
 
     def load_app(self, unload=False):
         if unload:
@@ -63,7 +74,7 @@ class PebbleHarness(PebbleHarnessBase):
         self.resource_handles = {}
         self.next_app_timer_id = 0
         self.app_timers = {}
-        self.custom_fonts = {}
+        self.fonts = {}
         self.bitmaps = {}
         self.handlers = None
         self.last_tick = None
@@ -89,9 +100,11 @@ class PebbleHarness(PebbleHarnessBase):
         handle = ffi.cast('struct ClayResourceHandle *', resource_handle)
         return self.resource_handles[handle.file_id]
 
-    def get_custom_font(self, font_handle):
-        handle = ffi.cast('struct ClayResourceHandle *', font_handle)
-        return self.custom_fonts[handle.file_id]
+    def get_font(self, font_handle):
+        if font_handle == ffi.NULL:
+            return None
+        handle = ffi.cast('struct ClayFontHandle *', font_handle)
+        return self.fonts[(handle.custom, handle.file_id)][1]
 
     def get_bitmap(self, bitmap_handle):
         handle = ffi.cast('struct ClayResourceHandle *', bitmap_handle)
@@ -466,13 +479,14 @@ class PebbleHarness(PebbleHarnessBase):
     #    GContext *ctx, const char *text, const GFont font, const GRect box,
     #    const GTextOverflowMode overflow_mode, const GTextAlignment alignment,
     #    const GTextLayoutCacheRef layout);
-    def graphics_text_draw(self, gctxp, text, font, box, overflow_mode,
+    def graphics_text_draw(self, gctxp, text, fontp, box, overflow_mode,
                            alignment, layout):
-        if font == ffi.NULL:
-            print "Font not found, aborting test draw."
+        font = self.get_font(fontp)
+        if font is None:
+            print "Font not found, aborting text draw."
             return
         gctx = self.get_graphics_context(gctxp)
-        gctx.draw_text(ffi.string(text), self.get_custom_font(font), box,
+        gctx.draw_text(ffi.string(text), font, box,
                        self._translate_align(gctx, alignment))
 
     # Hardware - Backlight
@@ -563,14 +577,28 @@ class PebbleHarness(PebbleHarnessBase):
 
     # Text - Fonts
 
-    # GFont fonts_get_system_font(const char *font_key);
+    def fonts_get_system_font(self, font_key):
+        if self.system_resources is None:
+            print "No firmware image provided, system resources unavailable."
+            return ffi.NULL
+
+        file_id = self.system_resources.get_file_id(ffi.string(font_key))
+        if (False, file_id) not in self.fonts:
+            font = PebbleFont(self.system_resources.get_chunk(file_id))
+            fontp = ffi.new("struct ClayFontHandle *",
+                            {'custom': False, 'file_id': file_id})
+            self.fonts[(False, file_id)] = (fontp, font)
+        return self.fonts[(False, file_id)][0]
 
     def fonts_load_custom_font(self, resourcep):
         resource_handle = self.get_resource(resourcep)
-        if resource_handle.file_id not in self.custom_fonts:
+        file_id = resource_handle.file_id
+        if (True, file_id) not in self.fonts:
             font = PebbleFont(resource_handle.get_data())
-            self.custom_fonts[resource_handle.file_id] = font
-        return resourcep
+            fontp = ffi.new("struct ClayFontHandle *",
+                            {'custom': True, 'file_id': file_id})
+            self.fonts[(True, file_id)] = (fontp, font)
+        return self.fonts[(True, file_id)][0]
 
     # void fonts_unload_custom_font(GFont font);
 
@@ -778,8 +806,14 @@ class PebbleTextLayer(object):
         self.background_color = self._harness.lib.GColorClear
         self.text_color = self._harness.lib.GColorBlack
         self.text_alignment = self._harness.lib.GTextAlignmentLeft
-        text_layerp.font = ffi.NULL
         text_layerp.layer.update_proc = self._update_proc
+        # A bit hacky, but I don't want to spam warnings for text layers that
+        # aren't even going to use the default font.
+        if harness.system_resources is not None:
+            text_layerp.font = harness.fonts_get_system_font(
+                ffi.new("char[]", "RESOURCE_ID_FONT_FALLBACK"))
+        else:
+            text_layerp.font = ffi.NULL
 
     @property
     def layer(self):

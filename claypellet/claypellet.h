@@ -213,6 +213,11 @@ struct ClayResourceHandle {
     uint32_t file_id;
 };
 
+struct ClayFontHandle {
+    bool custom;
+    uint32_t file_id;
+};
+
 struct ClayGraphicsContext {
     uint32_t gctx_id;
 };

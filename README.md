@@ -56,6 +56,13 @@ tested on any other operating systems, so YMMV.)
 How to use it
 -------------
 
+You can call `run_pebble_app.py -h` to get a list of parameters available. The
+most exciting param (and the only one without a useful default) is `--firmware`
+which allows you to specify a Pebble firmware file (perhaps acquired using some
+[fine tools on the internet](https://github.com/xndcn/pebble-firmware-utils))
+to read system fonts from. Without this, text using system fonts will not be
+rendered.
+
 Once you have your app running in claypebble, you can push some buttons on your
 keyboard to make things happen.
 
@@ -74,7 +81,6 @@ There are a bunch of documented API functions still unimplemented:
   * A few graphics APIs, including paths, lines and pixels.
   * All "hardware" APIs: backlight, buttons, vibration.
   * Raw resource access.
-  * System fonts. (See below.)
   * Some miscellaneous functions here and there not mentioned above.
 
 All documented functions have commented C function signatures in `harness.py`
@@ -83,11 +89,10 @@ have callback hooks defined and stub implementations in the generated C and
 Python code. I've implemented a few undocumented API functions because some
 apps I tried to run used them.
 
-System font support shouldn't be too hard to add once we have access to the
-system fonts. An appropriately-licensed resource pack or something would
-probably be the easiest way. Alternately, if someone wants to build a resource
-pack of "similar enough" equivalents, we could probably start using those
-instead of just refusing to display text.
+System font support requires a separate download of a Pebble firmware bundle.
+There should probably be a fallback font (or set of fonts) for when this isn't
+available, but for now we just give up and don't draw text with fonts we can't
+find.
 
 I haven't really decided how best to do button input, but binding to arrow keys
 seems like a good plan. This hasn't been a priority since I've only been
