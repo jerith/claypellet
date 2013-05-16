@@ -446,6 +446,12 @@ class PebbleHarness(PebbleHarnessBase):
             self.lib.GTextAlignmentRight: gctx.ALIGN_RIGHT,
         }[align]
 
+    def _translate_overflow(self, gctx, overflow_mode):
+        return {
+            self.lib.GTextOverflowModeWordWrap: gctx.OVERFLOW_WORD_WRAP,
+            self.lib.GTextOverflowModeTrailingEllipsis: gctx.OVERFLOW_ELLIPSIS,
+        }[overflow_mode]
+
     def _translate_comp_op(self, gctx, mode):
         return {
             self.lib.GCompOpAssign: gctx.COMP_ASSIGN,
@@ -487,7 +493,8 @@ class PebbleHarness(PebbleHarnessBase):
             return
         gctx = self.get_graphics_context(gctxp)
         gctx.draw_text(ffi.string(text), font, box,
-                       self._translate_align(gctx, alignment))
+                       self._translate_align(gctx, alignment),
+                       self._translate_overflow(gctx, overflow_mode))
 
     # Hardware - Backlight
 

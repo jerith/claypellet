@@ -3,12 +3,10 @@
  * by `FFI.cdef()'.
  ****************************************************************************/
 
-
 #define TRIG_MAX_RATIO ...
 #define TRIG_MAX_ANGLE ...
 #define ANIMATION_NORMALIZED_MIN ...
 #define ANIMATION_NORMALIZED_MAX ...
-
 
 struct Layer;
 struct AccelData;
@@ -18,7 +16,8 @@ struct MenuLayer;
 struct NumberWindow;
 struct GContext;
 typedef struct GContext GContext;
-
+struct TextLayout;
+typedef struct TextLayout TextLayout;
 
 typedef struct AccelData
 {
@@ -26,28 +25,34 @@ typedef struct AccelData
   int16_t y;
   int16_t z;
 } AccelData;
+
 typedef struct ListNode
 {
   struct ListNode *next;
   struct ListNode *prev;
 } ListNode;
+
 typedef enum {AnimationCurveLinear = 0, AnimationCurveEaseIn = 1, AnimationCurveEaseOut = 2, AnimationCurveEaseInOut = 3, NumAnimationCurve = 4} AnimationCurve;
 typedef void (*AnimationSetupImplementation)(struct Animation *animation);
 typedef void (*AnimationUpdateImplementation)(struct Animation *animation, const uint32_t time_normalized);
 typedef void (*AnimationTeardownImplementation)(struct Animation *animation);
+
 typedef struct AnimationImplementation
 {
   AnimationSetupImplementation setup;
   AnimationUpdateImplementation update;
   AnimationTeardownImplementation teardown;
 } AnimationImplementation;
+
 typedef void (*AnimationStartedHandler)(struct Animation *animation, void *context);
 typedef void (*AnimationStoppedHandler)(struct Animation *animation, bool finished, void *context);
+
 typedef struct AnimationHandlers
 {
   AnimationStartedHandler started;
   AnimationStoppedHandler stopped;
 } AnimationHandlers;
+
 typedef struct Animation
 {
   ListNode list_node;
@@ -61,15 +66,18 @@ typedef struct Animation
   /* bool is_completed : 1; */
     ...;
 } Animation;
+
 typedef void *AppTaskContextRef;
 typedef uint32_t AppTimerHandle;
 typedef enum {BUTTON_ID_BACK = 0, BUTTON_ID_UP, BUTTON_ID_SELECT, BUTTON_ID_DOWN, NUM_BUTTONS} ButtonId;
 typedef enum GColor {GColorClear = -1, GColorBlack = 0, GColorWhite = 1} GColor;
+
 typedef struct GPoint
 {
   int16_t x;
   int16_t y;
 } GPoint;
+
 typedef struct GPath
 {
   int num_points;
@@ -77,21 +85,25 @@ typedef struct GPath
   int32_t rotation;
   GPoint offset;
 } GPath;
+
 typedef struct GPathInfo
 {
   int num_points;
   GPoint *points;
 } GPathInfo;
+
 typedef struct GSize
 {
   int16_t w;
   int16_t h;
 } GSize;
+
 typedef struct GRect
 {
   GPoint origin;
   GSize size;
 } GRect;
+
 typedef struct GBitmap
 {
   void *addr;
@@ -99,8 +111,10 @@ typedef struct GBitmap
   uint16_t info_flags;
   GRect bounds;
 } GBitmap;
+
 typedef enum {GCompOpAssign, GCompOpAssignInverted, GCompOpOr, GCompOpAnd, GCompOpClear} GCompOp;
-typedef struct GDrawState
+
+typedef struct
 {
   GRect clip_box;
   GRect drawing_box;
@@ -124,8 +138,10 @@ typedef enum {
     GCornersRight = 10
 } GCornerMask;
 
+/* typedef enum {GCornerNone = 0, GCornerTopLeft = 1 << 0, GCornerTopRight = 1 << 1, GCornerBottomLeft = 1 << 2, GCornerBottomRight = 1 << 3, GCornersAll = ((GCornerTopLeft | GCornerTopRight) | GCornerBottomLeft) | GCornerBottomRight, GCornersTop = GCornerTopLeft | GCornerTopRight, GCornersBottom = GCornerBottomLeft | GCornerBottomRight, GCornersLeft = GCornerTopLeft | GCornerBottomLeft, GCornersRight = GCornerTopRight | GCornerBottomRight} GCornerMask; */
 typedef void *AppContextRef;
-typedef struct 
+
+typedef struct
 {
   int tm_sec;
   int tm_min;
@@ -148,15 +164,17 @@ typedef enum {
     YEAR_UNIT = 32
 } TimeUnits;
 
+/* typedef enum {SECOND_UNIT = 1 << 0, MINUTE_UNIT = 1 << 1, HOUR_UNIT = 1 << 2, DAY_UNIT = 1 << 3, MONTH_UNIT = 1 << 4, YEAR_UNIT = 1 << 5} TimeUnits; */
 typedef void *ClickRecognizerRef;
 typedef void (*ClickHandler)(ClickRecognizerRef recognizer, void *context);
 typedef enum {TUPLE_BYTE_ARRAY = 0, TUPLE_CSTRING = 1, TUPLE_UINT = 2, TUPLE_INT = 3} TupleType;
-typedef struct 
+
+typedef struct //__attribute__((__packed__))
 {
-  /* uint32_t key; */
+  uint32_t key;
   /* TupleType type : 8; */
   /* uint16_t length; */
-  /* union  */
+  /* union */
   /* { */
   /*   uint8_t data[0]; */
   /*   char cstring[0]; */
@@ -169,36 +187,39 @@ typedef struct
   /* } value[]; */
     ...;
 } Tuple;
+
 typedef struct Tuplet
 {
   TupleType type;
   uint32_t key;
-  union 
+  union
   {
-    struct 
+    struct
     {
       const uint8_t *data;
       const uint16_t length;
     } bytes;
-    struct 
+    struct
     {
       const char *data;
       const uint16_t length;
     } cstring;
-    struct 
+    struct
     {
       uint32_t storage;
       const uint16_t width;
     } integer;
   };
 } Tuplet;
-typedef struct 
+
+typedef struct //__attribute__((__packed__))
 {
-  /* uint8_t count; */
+  uint8_t count;
   /* Tuple head[]; */
     ...;
 } Dictionary;
-typedef struct 
+
+typedef struct
 {
   Dictionary *dictionary;
   const void *end;
@@ -220,66 +241,79 @@ typedef enum {
     APP_MSG_CALLBACK_NOT_REGISTERED = 2048
 } AppMessageResult;
 
-typedef struct 
+/* typedef enum {APP_MSG_OK = 0, APP_MSG_SEND_TIMEOUT = 1 << 1, APP_MSG_SEND_REJECTED = 1 << 2, APP_MSG_NOT_CONNECTED = 1 << 3, APP_MSG_APP_NOT_RUNNING = 1 << 4, APP_MSG_INVALID_ARGS = 1 << 5, APP_MSG_BUSY = 1 << 6, APP_MSG_BUFFER_OVERFLOW = 1 << 7, APP_MSG_ALREADY_RELEASED = 1 << 9, APP_MSG_CALLBACK_ALREADY_REGISTERED = 1 << 10, APP_MSG_CALLBACK_NOT_REGISTERED = 1 << 11} AppMessageResult; */
+
+typedef struct AppMessageCallbacks
+{
+  void (*out_sent)(DictionaryIterator *sent, void *context);
+  void (*out_failed)(DictionaryIterator *failed, AppMessageResult reason, void *context);
+  void (*in_received)(DictionaryIterator *received, void *context);
+  void (*in_dropped)(void *context, AppMessageResult reason);
+} AppMessageCallbacks;
+
+typedef struct AppMessageCallbacksNode
 {
   ListNode node;
   void *context;
-  struct 
-  {
-    void (*out_sent)(DictionaryIterator *sent, void *context);
-    void (*out_failed)(DictionaryIterator *failed, AppMessageResult reason, void *context);
-    void (*in_received)(DictionaryIterator *received, void *context);
-    void (*in_dropped)(void *context, AppMessageResult reason);
-  } callbacks;
+  AppMessageCallbacks callbacks;
 } AppMessageCallbacksNode;
-typedef struct 
+
+typedef struct
 {
-  struct 
+  struct buffer_sizes
   {
     uint16_t inbound;
     uint16_t outbound;
   } buffer_sizes;
   AppMessageCallbacksNode default_callbacks;
 } PebbleAppMessagingInfo;
-typedef struct 
+
+typedef struct
 {
   void (*callback)(void *data);
   void *data;
 } PebbleCallbackEvent;
-typedef struct 
+
+typedef struct
 {
   PblTm *tick_time;
   TimeUnits units_changed;
 } PebbleTickEvent;
-typedef struct 
+
+typedef struct
 {
   struct Window *window;
   struct GContext *ctx;
 } PebbleRenderEvent;
-typedef struct 
+
+typedef struct
 {
   ButtonId button_id;
 } PebbleButtonEvent;
+
 typedef void (*PebbleAppInitEventHandler)(AppContextRef app_ctx);
 typedef void (*PebbleAppButtonEventHandler)(AppContextRef app_ctx, PebbleButtonEvent *event);
 typedef void (*PebbleAppRenderEventHandler)(AppContextRef app_ctx, PebbleRenderEvent *event);
 typedef void (*PebbleAppDeinitEventHandler)(AppContextRef app_ctx);
 typedef void (*PebbleAppTimerHandler)(AppContextRef app_ctx, AppTimerHandle handle, uint32_t cookie);
 typedef void (*PebbleAppTickHandler)(AppContextRef app_ctx, PebbleTickEvent *event);
-typedef struct 
+
+typedef struct
 {
   PebbleAppTickHandler tick_handler;
   TimeUnits tick_units;
 } PebbleAppTickInfo;
-typedef struct PebbleAppInputHandlers
+
+typedef struct
 {
-  struct 
+  struct buttons
   {
     PebbleAppButtonEventHandler up;
     PebbleAppButtonEventHandler down;
   } buttons;
 } PebbleAppInputHandlers;
-typedef struct 
+
+typedef struct
 {
   PebbleAppInitEventHandler init_handler;
   PebbleAppDeinitEventHandler deinit_handler;
@@ -289,7 +323,9 @@ typedef struct
   PebbleAppTimerHandler timer_handler;
   PebbleAppMessagingInfo messaging_info;
 } PebbleAppHandlers;
+
 typedef void (*LayerUpdateProc)(struct Layer *layer, GContext *ctx);
+
 typedef struct Layer
 {
   GRect bounds;
@@ -302,11 +338,13 @@ typedef struct Layer
   struct Window *window;
   LayerUpdateProc update_proc;
 } Layer;
+
 typedef void *GFont;
 typedef enum {GTextOverflowModeWordWrap, GTextOverflowModeTrailingEllipsis} GTextOverflowMode;
 typedef enum {GTextAlignmentLeft, GTextAlignmentCenter, GTextAlignmentRight} GTextAlignment;
 typedef enum GAlign {GAlignCenter, GAlignTopLeft, GAlignTopRight, GAlignTop, GAlignLeft, GAlignBottom, GAlignRight, GAlignBottomRight, GAlignBottomLeft} GAlign;
-typedef void *GTextLayoutCacheRef;
+typedef TextLayout *GTextLayoutCacheRef;
+
 typedef struct TextLayer
 {
   Layer layer;
@@ -320,16 +358,20 @@ typedef struct TextLayer
   /* bool should_cache_layout : 1; */
     ...;
 } TextLayer;
+
 typedef void (*WindowButtonEventHandler)(AppContextRef app_ctx, struct Window *window, PebbleButtonEvent *event);
+
 typedef struct WindowInputHandlers
 {
-  struct 
+  struct
   {
     WindowButtonEventHandler up;
     WindowButtonEventHandler down;
   } buttons;
 } WindowInputHandlers;
+
 typedef void (*WindowHandler)(struct Window *window);
+
 typedef struct WindowHandlers
 {
   WindowHandler load;
@@ -337,15 +379,16 @@ typedef struct WindowHandlers
   WindowHandler disappear;
   WindowHandler unload;
 } WindowHandlers;
+
 typedef struct ClickConfig
 {
   void *context;
-  struct 
+  struct click
   {
     ClickHandler handler;
     uint16_t repeat_interval_ms;
   } click;
-  struct 
+  struct multi_click
   {
     uint8_t min;
     uint8_t max;
@@ -353,20 +396,22 @@ typedef struct ClickConfig
     ClickHandler handler;
     uint16_t timeout;
   } multi_click;
-  struct 
+  struct long_click
   {
     uint16_t delay_ms;
     ClickHandler handler;
     ClickHandler release_handler;
   } long_click;
-  struct 
+  struct raw
   {
     ClickHandler up_handler;
     ClickHandler down_handler;
     void *context;
   } raw;
 } ClickConfig;
+
 typedef void (*ClickConfigProvider)(ClickConfig **array_of_ptrs_to_click_configs_to_setup, void *context);
+
 typedef struct Window
 {
   Layer layer;
@@ -385,6 +430,7 @@ typedef struct Window
   const char *debug_name;
     ...;
 } Window;
+
 typedef struct BitmapLayer
 {
   Layer layer;
@@ -393,7 +439,8 @@ typedef struct BitmapLayer
   GAlign alignment : 4;
   GCompOp compositing_mode : 3;
 } BitmapLayer;
-typedef struct 
+
+typedef struct
 {
   Layer layer;
   GBitmap *bitmap;
@@ -403,25 +450,29 @@ typedef struct
   GPoint dest_ic;
   GCompOp compositing_mode;
 } RotBitmapLayer;
-typedef struct 
+
+typedef struct
 {
   Layer layer;
   RotBitmapLayer white_layer;
   RotBitmapLayer black_layer;
 } RotBmpPairLayer;
-typedef struct 
+
+typedef struct
 {
   uint8_t *data;
   GBitmap bmp;
   BitmapLayer layer;
 } BmpContainer;
-typedef struct 
+
+typedef struct
 {
   uint8_t *data;
   GBitmap bmp;
   RotBitmapLayer layer;
 } RotBmpContainer;
-typedef struct 
+
+typedef struct
 {
   uint8_t *white_data;
   uint8_t *black_data;
@@ -429,31 +480,35 @@ typedef struct
   GBitmap black_bmp;
   RotBmpPairLayer layer;
 } RotBmpPairContainer;
-typedef struct 
+
+typedef struct
 {
   uint32_t crc;
   uint32_t timestamp;
   char friendly_version[16];
 } ResBankVersion;
+
 typedef const ResBankVersion *ResVersionHandle;
 typedef const void *ResHandle;
-typedef struct 
+
+typedef struct
 {
   const uint32_t *durations;
   int num_segments;
 } VibePattern;
+
 typedef struct PropertyAnimation
 {
   Animation animation;
-  struct 
+  struct
   {
-    union 
+    union
     {
       GRect grect;
       GPoint gpoint;
       int16_t int16;
     } to;
-    union 
+    union
     {
       GRect grect;
       GPoint gpoint;
@@ -462,21 +517,26 @@ typedef struct PropertyAnimation
   } values;
   void *subject;
 } PropertyAnimation;
+
 typedef struct InverterLayer
 {
   Layer layer;
 } InverterLayer;
-typedef struct 
+
+typedef struct
 {
   uint8_t *data;
   GBitmap bmp;
 } HeapBitmap;
+
 typedef void (*ScrollLayerCallback)(struct ScrollLayer *scroll_layer, void *context);
+
 typedef struct ScrollLayerCallbacks
 {
   ClickConfigProvider click_config_provider;
   ScrollLayerCallback content_offset_changed_handler;
 } ScrollLayerCallbacks;
+
 typedef struct ScrollLayer
 {
   Layer layer;
@@ -486,19 +546,22 @@ typedef struct ScrollLayer
   ScrollLayerCallbacks callbacks;
   void *context;
 } ScrollLayer;
+
 typedef struct MenuIndex
 {
   uint16_t section;
   uint16_t row;
 } MenuIndex;
+
 typedef void (*MenuLayerSelectionChangedCallback)(struct MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context);
 typedef void (*MenuLayerSelectCallback)(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context);
-typedef void (*MenuLayerDrawRowCallback)(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *callback_context);
-typedef void (*MenuLayerDrawHeaderCallback)(GContext *ctx, Layer *cell_layer, uint16_t section_index, void *callback_context);
+typedef void (*MenuLayerDrawRowCallback)(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context);
+typedef void (*MenuLayerDrawHeaderCallback)(GContext *ctx, const Layer *cell_layer, uint16_t section_index, void *callback_context);
 typedef int16_t (*MenuLayerGetHeaderHeightCallback)(struct MenuLayer *menu_layer, uint16_t section_index, void *callback_context);
 typedef int16_t (*MenuLayerGetCellHeightCallback)(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context);
 typedef uint16_t (*MenuLayerGetNumberOfRowsInSectionsCallback)(struct MenuLayer *menu_layer, uint16_t section_index, void *callback_context);
 typedef uint16_t (*MenuLayerGetNumberOfSectionsCallback)(struct MenuLayer *menu_layer, void *callback_context);
+
 typedef struct MenuLayerCallbacks
 {
   MenuLayerGetNumberOfSectionsCallback get_num_sections;
@@ -511,18 +574,21 @@ typedef struct MenuLayerCallbacks
   MenuLayerSelectCallback select_long_click;
   MenuLayerSelectionChangedCallback selection_changed;
 } MenuLayerCallbacks;
+
 typedef struct MenuCellSpan
 {
   int16_t y;
   int16_t h;
   MenuIndex index;
 } MenuCellSpan;
+
 typedef enum {MenuRowAlignNone, MenuRowAlignCenter, MenuRowAlignTop, MenuRowAlignBottom} MenuRowAlign;
+
 typedef struct MenuLayer
 {
   ScrollLayer scroll_layer;
   InverterLayer inverter;
-  struct 
+  struct
   {
     MenuCellSpan cursor;
   } cache;
@@ -530,28 +596,34 @@ typedef struct MenuLayer
   MenuLayerCallbacks callbacks;
   void *callback_context;
 } MenuLayer;
+
 typedef void (*SimpleMenuLayerSelectCallback)(int index, void *context);
-typedef struct 
+
+typedef struct
 {
   const char *title;
   const char *subtitle;
   GBitmap *icon;
   SimpleMenuLayerSelectCallback callback;
 } SimpleMenuItem;
-typedef struct 
+
+typedef struct
 {
   const char *title;
   const SimpleMenuItem *items;
   uint32_t num_items;
 } SimpleMenuSection;
-typedef struct 
+
+typedef struct
 {
   MenuLayer menu;
   const SimpleMenuSection *sections;
   int num_sections;
   void *callback_context;
 } SimpleMenuLayer;
+
 typedef int32_t (*AnimationTimingFunction)(uint32_t time_normalized);
+
 typedef struct ActionBarLayer
 {
   Layer layer;
@@ -562,13 +634,16 @@ typedef struct ActionBarLayer
   unsigned is_highlighted : 3;
   GColor background_color : 2;
 } ActionBarLayer;
+
 typedef void (*NumberWindowCallback)(struct NumberWindow *number_window, void *context);
-typedef struct 
+
+typedef struct
 {
   NumberWindowCallback incremented;
   NumberWindowCallback decremented;
   NumberWindowCallback selected;
 } NumberWindowCallbacks;
+
 typedef struct NumberWindow
 {
   Window window;
@@ -584,6 +659,7 @@ typedef struct NumberWindow
   NumberWindowCallbacks callbacks;
   void *callback_context;
 } NumberWindow;
+
 typedef GPoint GPointReturn;
 typedef GRect GRectReturn;
 typedef void (*Int16Setter)(void *subject, int16_t int16);
@@ -592,26 +668,29 @@ typedef void (*GRectSetter)(void *subject, GRect grect);
 typedef int16_t (*Int16Getter)(void *subject);
 typedef GPointReturn (*GPointGetter)(void *subject);
 typedef GRectReturn (*GRectGetter)(void *subject);
+
 typedef struct PropertyAnimationAccessors
 {
-  union 
+  union
   {
     Int16Setter int16;
     GPointSetter gpoint;
     GRectSetter grect;
   } setter;
-  union 
+  union
   {
     Int16Getter int16;
     GPointGetter gpoint;
     GRectGetter grect;
   } getter;
 } PropertyAnimationAccessors;
+
 typedef struct PropertyAnimationImplementation
 {
   AnimationImplementation base;
   PropertyAnimationAccessors accessors;
 } PropertyAnimationImplementation;
+
 
 // Modified for cdef
 typedef enum {
@@ -621,18 +700,20 @@ typedef enum {
     DICT_INTERNAL_INCONSISTENCY = 8
 } DictionaryResult;
 
+/* typedef enum {DICT_OK = 0, DICT_NOT_ENOUGH_STORAGE = 1 << 1, DICT_INVALID_ARGS = 1 << 2, DICT_INTERNAL_INCONSISTENCY = 1 << 3} DictionaryResult; */
 typedef void (*AppSyncTupleChangedCallback)(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context);
 typedef void (*AppSyncErrorCallback)(DictionaryResult dict_error, AppMessageResult app_message_error, void *context);
+
 typedef struct AppSync
 {
   DictionaryIterator current_iter;
-  union 
+  union
   {
     Dictionary *current;
     uint8_t *buffer;
   };
   uint16_t buffer_size;
-  struct 
+  struct
   {
     AppSyncTupleChangedCallback value_changed;
     AppSyncErrorCallback error;
@@ -640,5 +721,6 @@ typedef struct AppSync
   } callback;
   AppMessageCallbacksNode app_message_cb_node;
 } AppSync;
+
 typedef void (*DictionarySerializeCallback)(const uint8_t * const data, const uint16_t size, void *context);
 typedef void (*DictionaryKeyUpdatedCallback)(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context);

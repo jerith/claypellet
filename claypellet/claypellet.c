@@ -174,6 +174,7 @@ t_app_sync_init_cb app_sync_init_cb;
 t_app_sync_deinit_cb app_sync_deinit_cb;
 t_app_sync_set_cb app_sync_set_cb;
 t_app_sync_get_cb app_sync_get_cb;
+
 t_dict_write_begin_cb dict_write_begin_cb;
 t_dict_write_data_cb dict_write_data_cb;
 t_dict_write_cstring_cb dict_write_cstring_cb;
@@ -703,18 +704,18 @@ void text_layer_set_size(TextLayer *text_layer, const GSize max_size) { text_lay
 void text_layer_set_overflow_mode(TextLayer *text_layer, GTextOverflowMode line_mode) { text_layer_set_overflow_mode_cb(text_layer, line_mode); }
 GSize graphics_text_layout_get_max_used_size(GContext *ctx, const char *text, const GFont font, const GRect box, const GTextOverflowMode overflow_mode, const GTextAlignment alignment, GTextLayoutCacheRef layout) { return graphics_text_layout_get_max_used_size_cb(ctx, text, font, box, overflow_mode, alignment, layout); }
 void inverter_layer_init(InverterLayer *inverter, GRect frame) { inverter_layer_init_cb(inverter, frame); }
-void bitmap_layer_init(BitmapLayer *image, GRect frame) { bitmap_layer_init_cb(image, frame); }
-void bitmap_layer_set_bitmap(BitmapLayer *image, const GBitmap *bitmap) { bitmap_layer_set_bitmap_cb(image, bitmap); }
-void bitmap_layer_set_alignment(BitmapLayer *image, GAlign alignment) { bitmap_layer_set_alignment_cb(image, alignment); }
-void bitmap_layer_set_background_color(BitmapLayer *image, GColor color) { bitmap_layer_set_background_color_cb(image, color); }
-void bitmap_layer_set_compositing_mode(BitmapLayer *image, GCompOp mode) { bitmap_layer_set_compositing_mode_cb(image, mode); }
+void bitmap_layer_init(BitmapLayer *bitmap_layer, GRect frame) { bitmap_layer_init_cb(bitmap_layer, frame); }
+void bitmap_layer_set_bitmap(BitmapLayer *bitmap_layer, const GBitmap *bitmap) { bitmap_layer_set_bitmap_cb(bitmap_layer, bitmap); }
+void bitmap_layer_set_alignment(BitmapLayer *bitmap_layer, GAlign alignment) { bitmap_layer_set_alignment_cb(bitmap_layer, alignment); }
+void bitmap_layer_set_background_color(BitmapLayer *bitmap_layer, GColor color) { bitmap_layer_set_background_color_cb(bitmap_layer, color); }
+void bitmap_layer_set_compositing_mode(BitmapLayer *bitmap_layer, GCompOp mode) { bitmap_layer_set_compositing_mode_cb(bitmap_layer, mode); }
 bool heap_bitmap_init(HeapBitmap *hb, int resource_id) { return heap_bitmap_init_cb(hb, resource_id); }
 void heap_bitmap_deinit(HeapBitmap *hb) { heap_bitmap_deinit_cb(hb); }
 ButtonId click_recognizer_get_button_id(ClickRecognizerRef recognizer) { return click_recognizer_get_button_id_cb(recognizer); }
 uint8_t click_number_of_clicks_counted(ClickRecognizerRef recognizer) { return click_number_of_clicks_counted_cb(recognizer); }
-void menu_cell_basic_draw(GContext *ctx, Layer *cell_layer, const char *title, const char *subtitle, GBitmap *icon) { menu_cell_basic_draw_cb(ctx, cell_layer, title, subtitle, icon); }
-void menu_cell_title_draw(GContext *ctx, Layer *cell_layer, const char *title) { menu_cell_title_draw_cb(ctx, cell_layer, title); }
-void menu_cell_basic_header_draw(GContext *ctx, Layer *cell_layer, const char *title) { menu_cell_basic_header_draw_cb(ctx, cell_layer, title); }
+void menu_cell_basic_draw(GContext *ctx, const Layer *cell_layer, const char *title, const char *subtitle, GBitmap *icon) { menu_cell_basic_draw_cb(ctx, cell_layer, title, subtitle, icon); }
+void menu_cell_title_draw(GContext *ctx, const Layer *cell_layer, const char *title) { menu_cell_title_draw_cb(ctx, cell_layer, title); }
+void menu_cell_basic_header_draw(GContext *ctx, const Layer *cell_layer, const char *title) { menu_cell_basic_header_draw_cb(ctx, cell_layer, title); }
 void menu_layer_init(MenuLayer *menu_layer, GRect frame) { menu_layer_init_cb(menu_layer, frame); }
 Layer *menu_layer_get_layer(MenuLayer *menu_layer) { return menu_layer_get_layer_cb(menu_layer); }
 void menu_layer_set_callbacks(MenuLayer *menu_layer, void *callback_context, MenuLayerCallbacks callbacks) { menu_layer_set_callbacks_cb(menu_layer, callback_context, callbacks); }
@@ -732,7 +733,7 @@ void scroll_layer_set_content_offset(ScrollLayer *scroll_layer, GPoint offset, b
 GPoint scroll_layer_get_content_offset(ScrollLayer *scroll_layer) { return scroll_layer_get_content_offset_cb(scroll_layer); }
 void scroll_layer_set_content_size(ScrollLayer *scroll_layer, GSize size) { scroll_layer_set_content_size_cb(scroll_layer, size); }
 GSize scroll_layer_get_content_size(ScrollLayer *scroll_layer) { return scroll_layer_get_content_size_cb(scroll_layer); }
-void scroll_layer_set_frame(ScrollLayer *scroll_layer, GRect rect) { scroll_layer_set_frame_cb(scroll_layer, rect); }
+void scroll_layer_set_frame(ScrollLayer *scroll_layer, GRect frame) { scroll_layer_set_frame_cb(scroll_layer, frame); }
 void scroll_layer_scroll_up_click_handler(ClickRecognizerRef recognizer, ScrollLayer *scroll_layer) { scroll_layer_scroll_up_click_handler_cb(recognizer, scroll_layer); }
 void scroll_layer_scroll_down_click_handler(ClickRecognizerRef recognizer, ScrollLayer *scroll_layer) { scroll_layer_scroll_down_click_handler_cb(recognizer, scroll_layer); }
 void simple_menu_layer_init(SimpleMenuLayer *simple_menu, GRect frame, Window *window, const SimpleMenuSection *sections, int num_sections, void *callback_context) { simple_menu_layer_init_cb(simple_menu, frame, window, sections, num_sections, callback_context); }
@@ -761,10 +762,11 @@ AppMessageResult app_message_deregister_callbacks(AppMessageCallbacksNode *callb
 AppMessageResult app_message_out_get(DictionaryIterator **iter_out) { return app_message_out_get_cb(iter_out); }
 AppMessageResult app_message_out_send(void) { return app_message_out_send_cb(); }
 AppMessageResult app_message_out_release(void) { return app_message_out_release_cb(); }
-void app_sync_init(AppSync *s, uint8_t *buffer, const uint16_t buffer_size, const Tuplet * const keys_and_initial_values, const uint8_t count, AppSyncTupleChangedCallback tuple_changed_callback, AppSyncErrorCallback error_callback, void *context) { app_sync_init_cb(s, buffer, buffer_size, keys_and_initial_values, count, tuple_changed_callback, error_callback, context); }
-void app_sync_deinit(AppSync *s) { app_sync_deinit_cb(s); }
-AppMessageResult app_sync_set(AppSync *s, const Tuplet * const keys_and_values_to_update, const uint8_t count) { return app_sync_set_cb(s, keys_and_values_to_update, count); }
-const Tuple *app_sync_get(const AppSync *s, const uint32_t key) { return app_sync_get_cb(s, key); }
+void app_sync_init(struct AppSync *s, uint8_t *buffer, const uint16_t buffer_size, const Tuplet * const keys_and_initial_values, const uint8_t count, AppSyncTupleChangedCallback tuple_changed_callback, AppSyncErrorCallback error_callback, void *context) { app_sync_init_cb(s, buffer, buffer_size, keys_and_initial_values, count, tuple_changed_callback, error_callback, context); }
+void app_sync_deinit(struct AppSync *s) { app_sync_deinit_cb(s); }
+AppMessageResult app_sync_set(struct AppSync *s, const Tuplet * const keys_and_values_to_update, const uint8_t count) { return app_sync_set_cb(s, keys_and_values_to_update, count); }
+const Tuple *app_sync_get(const struct AppSync *s, const uint32_t key) { return app_sync_get_cb(s, key); }
+uint32_t dict_calc_buffer_size(const uint8_t tuple_count, ...) { return  0; }
 DictionaryResult dict_write_begin(DictionaryIterator *iter, uint8_t * const buffer, const uint16_t size) { return dict_write_begin_cb(iter, buffer, size); }
 DictionaryResult dict_write_data(DictionaryIterator *iter, const uint32_t key, const uint8_t * const data, const uint16_t size) { return dict_write_data_cb(iter, key, data, size); }
 DictionaryResult dict_write_cstring(DictionaryIterator *iter, const uint32_t key, const char * const cstring) { return dict_write_cstring_cb(iter, key, cstring); }
@@ -795,7 +797,7 @@ void action_bar_layer_add_to_window(ActionBarLayer *action_bar, struct Window *w
 void action_bar_layer_remove_from_window(ActionBarLayer *action_bar) { action_bar_layer_remove_from_window_cb(action_bar); }
 void action_bar_layer_set_background_color(ActionBarLayer *action_bar, GColor background_color) { action_bar_layer_set_background_color_cb(action_bar, background_color); }
 void number_window_init(NumberWindow *numberwindow, const char *label, NumberWindowCallbacks callbacks, void *callback_context) { number_window_init_cb(numberwindow, label, callbacks, callback_context); }
-void number_window_set_label(NumberWindow *nw, const char *label) { number_window_set_label_cb(nw, label); }
+void number_window_set_label(NumberWindow *numberwindow, const char *label) { number_window_set_label_cb(numberwindow, label); }
 void number_window_set_max(NumberWindow *numberwindow, int max) { number_window_set_max_cb(numberwindow, max); }
 void number_window_set_min(NumberWindow *numberwindow, int min) { number_window_set_min_cb(numberwindow, min); }
 void number_window_set_value(NumberWindow *numberwindow, int value) { number_window_set_value_cb(numberwindow, value); }

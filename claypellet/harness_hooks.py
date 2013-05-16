@@ -495,19 +495,19 @@ class PebbleHarnessBase(object):
     def inverter_layer_init(self, inverter, frame):
         raise NotImplementedError("inverter_layer_init")
 
-    def bitmap_layer_init(self, image, frame):
+    def bitmap_layer_init(self, bitmap_layer, frame):
         raise NotImplementedError("bitmap_layer_init")
 
-    def bitmap_layer_set_bitmap(self, image, bitmap):
+    def bitmap_layer_set_bitmap(self, bitmap_layer, bitmap):
         raise NotImplementedError("bitmap_layer_set_bitmap")
 
-    def bitmap_layer_set_alignment(self, image, alignment):
+    def bitmap_layer_set_alignment(self, bitmap_layer, alignment):
         raise NotImplementedError("bitmap_layer_set_alignment")
 
-    def bitmap_layer_set_background_color(self, image, color):
+    def bitmap_layer_set_background_color(self, bitmap_layer, color):
         raise NotImplementedError("bitmap_layer_set_background_color")
 
-    def bitmap_layer_set_compositing_mode(self, image, mode):
+    def bitmap_layer_set_compositing_mode(self, bitmap_layer, mode):
         raise NotImplementedError("bitmap_layer_set_compositing_mode")
 
     def heap_bitmap_init(self, hb, resource_id):
@@ -582,7 +582,7 @@ class PebbleHarnessBase(object):
     def scroll_layer_get_content_size(self, scroll_layer):
         raise NotImplementedError("scroll_layer_get_content_size")
 
-    def scroll_layer_set_frame(self, scroll_layer, rect):
+    def scroll_layer_set_frame(self, scroll_layer, frame):
         raise NotImplementedError("scroll_layer_set_frame")
 
     def scroll_layer_scroll_up_click_handler(self, recognizer, scroll_layer):
@@ -681,6 +681,8 @@ class PebbleHarnessBase(object):
     def app_sync_get(self, s, key):
         raise NotImplementedError("app_sync_get")
 
+    # Variadic function dict_calc_buffer_size ignored.
+
     def dict_write_begin(self, iter, buffer, size):
         raise NotImplementedError("dict_write_begin")
 
@@ -771,7 +773,7 @@ class PebbleHarnessBase(object):
     def number_window_init(self, numberwindow, label, callbacks, callback_context):
         raise NotImplementedError("number_window_init")
 
-    def number_window_set_label(self, nw, label):
+    def number_window_set_label(self, numberwindow, label):
         raise NotImplementedError("number_window_set_label")
 
     def number_window_set_max(self, numberwindow, max):

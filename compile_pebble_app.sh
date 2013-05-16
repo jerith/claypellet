@@ -1,7 +1,7 @@
 #!/bin/bash
 
 claypellet_src_path="$(dirname $0)/claypellet"
-includes="-I. -I./include -I./build -I${claypellet_src_path}"
+includes="-I. -I./include -I./build -I./build/src -I${claypellet_src_path}"
 
 ./waf build
 

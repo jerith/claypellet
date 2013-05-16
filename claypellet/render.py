@@ -18,6 +18,9 @@ class PebbleGraphicsContext(object):
     ALIGN_CENTER = 'center'
     ALIGN_RIGHT = 'right'
 
+    OVERFLOW_WORD_WRAP = 'word_wrap'
+    OVERFLOW_ELLIPSIS = 'overflow_ellipsis'
+
     fill_color = COLOR_BLACK
     stroke_color = COLOR_WHITE
     text_color = COLOR_WHITE
@@ -209,7 +212,7 @@ class PebbleGraphicsContext(object):
 
         self.paste_image(draw_image, draw_box.origin)
 
-    def draw_text(self, text, font, grect, alignment):
+    def draw_text(self, text, font, grect, overflow_mode, alignment):
         # TODO: overflow, layout(?)
         text_box = Rect.from_grect(grect).move(self.rect.origin)
 
