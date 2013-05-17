@@ -493,8 +493,8 @@ class PebbleHarness(PebbleHarnessBase):
             return
         gctx = self.get_graphics_context(gctxp)
         gctx.draw_text(ffi.string(text), font, box,
-                       self._translate_align(gctx, alignment),
-                       self._translate_overflow(gctx, overflow_mode))
+                       self._translate_overflow(gctx, overflow_mode),
+                       self._translate_align(gctx, alignment))
 
     # Hardware - Backlight
 

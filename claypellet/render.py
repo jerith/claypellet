@@ -18,7 +18,7 @@ class PebbleGraphicsContext(object):
     ALIGN_CENTER = 'center'
     ALIGN_RIGHT = 'right'
 
-    OVERFLOW_WORD_WRAP = 'word_wrap'
+    OVERFLOW_WORD_WRAP = 'overflow_word_wrap'
     OVERFLOW_ELLIPSIS = 'overflow_ellipsis'
 
     fill_color = COLOR_BLACK
@@ -191,12 +191,12 @@ class PebbleGraphicsContext(object):
 
         self.paste_image(rect_image, rect.origin)
 
-    def _draw_text_line(self, text, dfont, text_box, alignment):
+    def _draw_text_line(self, text, font, text_box, alignment):
         text_image = self.tempimage(text_box.size)
 
         left = 0
         for ch in text:
-            glyph = dfont.get_glyph(ch)
+            glyph = font.get_glyph(ch)
             glyph.paste_to(text_image, (left, 0), self.text_color)
             left += glyph.advance
 
@@ -213,10 +213,14 @@ class PebbleGraphicsContext(object):
         self.paste_image(draw_image, draw_box.origin)
 
     def draw_text(self, text, font, grect, overflow_mode, alignment):
-        # TODO: overflow, layout(?)
+        # TODO: layout(?)
         text_box = Rect.from_grect(grect).move(self.rect.origin)
 
-        for i, line in enumerate(text.splitlines()):
+        ellipsis = '...' if overflow_mode == self.OVERFLOW_ELLIPSIS else ''
+        text_block = PebbleTextBlock(self, font, text_box)
+        lines = text_block.layout_text(text, ellipsis)
+
+        for i, line in enumerate(lines):
             line_box = Rect((text_box.x, text_box.y + i * font.max_height),
                             (text_box.w, text_box.h - i * font.max_height))
             self._draw_text_line(line, font, line_box, alignment)
@@ -245,3 +249,154 @@ class PebbleGraphicsContext(object):
         image.paste(bitmap.get_image(), ic_offset)
         image = image.rotate(angle, Image.BILINEAR)
         self.compose_image(image, self.rect)
+
+
+class TextChunk(object):
+    def __init__(self, font, text=None):
+        self.font = font
+        self.chars = []
+        if text is not None:
+            for ch in text:
+                self.append(ch)
+
+    def append(self, ch):
+        glyph = self.font.get_glyph(ch)
+        self.chars.append((ch, glyph.advance))
+
+    def extend(self, text_chunk):
+        self.chars.extend(text_chunk.chars)
+
+    def truncate(self, remove_chars=1):
+        chars = self.chars[-remove_chars:]
+        self.chars[-remove_chars:] = []
+        return [ch for ch, _ in chars]
+
+    def __len__(self):
+        return sum(w for _, w in self.chars)
+
+    def __str__(self):
+        return ''.join(ch for ch, _ in self.chars)
+
+
+class PebbleTextBlock(object):
+    def __init__(self, gctx, font, rect):
+        self.gctx = gctx
+        self.font = font
+        self.rect = rect
+        self.hyphen = TextChunk(font, '-')
+
+    def line_width(self, extra_chunk=None):
+        extra = 0 if extra_chunk is None else len(extra_chunk)
+        return len(self.line) + len(self.space) + len(self.word) + extra
+
+    def text_height(self, extra_lines):
+        return self.font.max_height * (len(self.lines) + extra_lines)
+
+    def glyph_width(self, ch):
+        return self.font.get_glyph(ch).advance
+
+    def layout_text(self, text, ellipsis=''):
+        self.ellipsis = TextChunk(self.font, ellipsis)
+        self.lines = []
+        self.reset_line()
+        self.done = False
+
+        for ch in text:
+            self.layout_char(ch)
+            if self.done:
+                break
+
+        return [str(line) for line in self.lines]
+
+    def layout_char(self, ch):
+        if self.text_height(1) > self.rect.h:
+            self.done = True
+            return
+
+        if ch == '\n':
+            return self.layout_newline()
+        if ch == ' ':
+            return self.layout_space()
+        self.word.append(ch)
+        if self.line_width() > self.rect.w:
+            return self.break_line()
+
+    def layout_newline(self):
+        self.line.extend(self.space)
+        self.line.extend(self.word)
+        self.reset_word()
+
+        if self.text_height(2) > self.rect.h:
+            # We're on the last available line, so truncate until we can fit
+            # the trailing ellipsis in.
+            while self.line_width(self.ellipsis) > self.rect.w:
+                self.line.truncate()
+            self.line.extend(self.ellipsis)
+            self.done = True
+
+        self.lines.append(self.line)
+        self.reset_line()
+
+    def layout_space(self):
+        if self.word:
+            self.line.extend(self.space)
+            self.line.extend(self.word)
+            self.reset_word()
+
+        self.space.append(' ')
+
+        if self.line_width() > self.rect.w:
+            # We're out of line width, so drop the space we just added and add
+            # a newline instead.
+            self.space.truncate()
+
+            if self.text_height(2) > self.rect.h:
+                # We're on the last available line, so reset the word before
+                # (which is only spaces anyway) addind the newline.
+                self.reset_word()
+
+            self.layout_newline()
+
+    def break_line(self):
+        self.line.extend(self.space)
+        chars = []
+
+        if self.text_height(2) > self.rect.h:
+            # This is our last line, so truncate and finish.
+            self.line.extend(self.word)
+            self.reset_word()
+            while self.line_width(self.ellipsis) > self.rect.w:
+                self.line.truncate()
+            self.line.extend(self.ellipsis)
+            self.lines.append(self.line)
+            self.done = True
+            self.reset_line()
+            return
+
+        if len(self.word) == self.line_width():
+            # This word has taken up the whole line so far, so hyphenate.
+            self.line.extend(self.word)
+            while self.line_width(self.hyphen) > self.rect.w:
+                chars.append(self.line.truncate())
+            self.line.extend(self.hyphen)
+            self.lines.append(self.line)
+            self.reset_line()
+            for ch in reversed(chars):
+                self.layout_char(ch)
+            return
+
+        word = self.word
+        self.lines.append(self.line)
+        self.reset_line()
+        self.word = word
+
+    def reset_word(self):
+        self.word = TextChunk(self.font)
+        self.space = TextChunk(self.font)
+
+    def reset_line(self):
+        self.reset_word()
+        self.line = TextChunk(self.font)
+
+    def render(self, alignment):
+        pass
