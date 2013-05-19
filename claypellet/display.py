@@ -9,7 +9,6 @@ import pygame.time
 import pygame.image
 from pygame.locals import SWSURFACE, QUIT, KEYDOWN, K_ESCAPE, K_q, K_r, K_s
 
-from .utils import Rect
 from .render import PebbleGraphicsContext
 
 
