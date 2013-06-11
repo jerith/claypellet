@@ -283,7 +283,8 @@ class PebbleTextBlock(object):
         self.gctx = gctx
         self.font = font
         self.rect = rect
-        self.hyphen = TextChunk(font, '-')
+        hyphen_char = '-' if font.has_glyph('-') else ''
+        self.hyphen = TextChunk(font, hyphen_char)
 
     def line_width(self, extra_chunk=None):
         extra = 0 if extra_chunk is None else len(extra_chunk)
@@ -305,6 +306,10 @@ class PebbleTextBlock(object):
             self.layout_char(ch)
             if self.done:
                 break
+
+        self.line.extend(self.space)
+        self.line.extend(self.word)
+        self.lines.append(self.line)
 
         return [str(line) for line in self.lines]
 

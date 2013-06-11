@@ -62,6 +62,9 @@ class PebbleFont(object):
         header.pop('_')
         return header, ''.join(bitmap)[:bmsize]
 
+    def has_glyph(self, ch):
+        return ord(ch) in self._glyph_offsets
+
     def get_glyph(self, ch):
         if ch not in self._glyphs:
             codepoint = ord(ch)
