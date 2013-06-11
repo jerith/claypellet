@@ -17,10 +17,13 @@ option_parser.add_option("-r", "--resources", dest="res", default=DEFAULT_RES,
                          help="Load resources from FILE", metavar="FILE")
 option_parser.add_option("-f", "--firmware", dest="firmware", default=None,
                          help="Load firmware from FILE", metavar="FILE")
+option_parser.add_option("-m", "--multiply-screen", dest="mult", default=1,
+                         help="Multiply screen size by MULT", metavar="MULT",
+                         type="int")
 
 options, _ = option_parser.parse_args()
 
 
 ph = PebbleHarness(options.app, options.res, options.firmware)
-pd = PebbleDisplay(ph)
+pd = PebbleDisplay(ph, options.mult)
 pd.run()

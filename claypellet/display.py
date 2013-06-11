@@ -7,15 +7,17 @@ import pygame.event
 import pygame.display
 import pygame.time
 import pygame.image
+import pygame.transform
 from pygame.locals import SWSURFACE, QUIT, KEYDOWN, K_ESCAPE, K_q, K_r, K_s
 
 from .render import PebbleGraphicsContext
 
 
 class PebbleDisplay(object):
-    def __init__(self, harness):
+    def __init__(self, harness, mult=1):
         self.harness = harness
-        self.display = self.setup_display((154, 178))
+        self.mult = mult
+        self.display = self.setup_display((154 * mult, 178 * mult))
         self.display.fill((127, 127, 127))
         self.fonts = {}
 
@@ -46,7 +48,7 @@ class PebbleDisplay(object):
             clock.tick(30)
 
     def get_screen_rect(self):
-        rect = pygame.Rect(0, 0, 144, 168)
+        rect = pygame.Rect(0, 0, 144 * self.mult, 168 * self.mult)
         rect.center = self.display.get_rect().center
         return rect
 
@@ -57,6 +59,8 @@ class PebbleDisplay(object):
         image = gctx.get_image()
         surface = pygame.image.fromstring(
             image.convert("RGBA").tostring(), image.size, "RGBA")
+        if self.mult != 1:
+            surface = pygame.transform.scale(surface, screen_rect.size)
         self.display.blit(surface.convert_alpha(self.display), screen_rect)
 
     def screenshot(self):
